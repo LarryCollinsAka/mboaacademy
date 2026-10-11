@@ -1,0 +1,246 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum LearningMode {
+  HYBRID
+  ONSITE
+  ONLINE
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum SubmissionStatus {
+  PENDING
+  SUBMITTED
+  GRADED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  role          Role           @default(STUDENT)
+  avatar        String?
+  bio           String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  enrollments   Enrollment[]
+  notes         StudentNote[]
+  submissions   Submission[]
+  coursesTaught Course[]       @relation("InstructorCourses")
+  payments      Payment[]
+}
+
+model Course {
+  id              String         @id @default(cuid())
+  title           String
+  slug            String         @unique
+  headline        String
+  description     String
+  level           String         @default("All Levels") // Beginner, Intermediate, Advanced
+  mode            LearningMode   @default(HYBRID)
+  price           Float          @default(0.0)
+  currency        String         @default("USD")
+  durationHours   Int            @default(40)
+  thumbnail       String?
+  skills          String[]       // Graph node references (e.g. "React", "Next.js", "Docker")
+  published       Boolean        @default(false)
+  
+  instructorId    String?
+  instructor      User?          @relation("InstructorCourses", fields: [instructorId], references: [id])
+  
+  modules         Module[]
+  enrollments     Enrollment[]
+  assignments     Assignment[]
+  payments        Payment[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Module {
+  id          String    @id @default(cuid())
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  order       Int       @default(1)
+  lessons     Lesson[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Lesson {
+  id              String         @id @default(cuid())
+  moduleId        String
+  module          Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title           String
+  slug            String
+  content         String?        @db.Text
+  videoUrl        String?
+  durationMinutes Int            @default(15)
+  order           Int            @default(1)
+  isFreePreview   Boolean        @default(false)
+
+  notes           StudentNote[]
+  assignments     Assignment[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model StudentNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId  String?
+  lesson    Lesson?  @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  title     String   @default("Untitled Note")
+  content   String   @db.Text
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Assignment {
+  id           String        @id @default(cuid())
+  courseId     String
+  course       Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId     String?
+  lesson       Lesson?       @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  title        String
+  instructions String        @db.Text
+  maxPoints    Int           @default(100)
+  dueDate      DateTime?
+  submissions  Submission[]
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  contentUrl   String?
+  textContent  String?          @db.Text
+  score        Int?
+  feedback     String?          @db.Text
+  status       SubmissionStatus @default(SUBMITTED)
+
+  submittedAt  DateTime         @default(now())
+  gradedAt     DateTime?
+}
+
+model Enrollment {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  mode        LearningMode     @default(HYBRID)
+  status      EnrollmentStatus @default(ACTIVE)
+  progress    Int              @default(0) // Percentage 0 - 100
+
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+
+  @@unique([userId, courseId])
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId       String
+  course         Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  amount         Float
+  currency       String        @default("USD")
+  provider       String        // "STRIPE", "MOMO", "ORANGE_MONEY"
+  providerRef    String?
+  status         PaymentStatus @default(PENDING)
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  studentName String
+  role        String
+  company     String
+  review      String   @db.Text
+  rating      Int      @default(5)
+  avatar      String?
+  courseName  String
+  isOnSite    Boolean  @default(true)
+  featured    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String   @db.Text
+  coverImage  String?
+  authorName  String   @default("Mboa Academy Editorial")
+  category    String   @default("Career Insights")
+  tags        String[]
+  published   Boolean  @default(true)
+  publishedAt DateTime @default(now())
+}
+
+model Language {
+  code        String        @id // e.g. "en", "fr", "es", "de"
+  name        String        // e.g. "English", "Français"
+  nativeName  String?       // e.g. "Français", "Deutsch"
+  flag        String?       // e.g. "🇬🇧", "🇫🇷", "🇨🇲"
+  isDefault   Boolean       @default(false)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  translations Translation[]
+}
+
+model Translation {
+  id        String   @id @default(cuid())
+  locale    String   // references Language.code
+  language  Language @relation(fields: [locale], references: [code], onDelete: Cascade)
+  namespace String   @default("common") // e.g. "common", "nav", "hero", "courses", "lms"
+  key       String   // e.g. "hero_title", "apply_now"
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([locale, namespace, key])
+  @@index([locale, namespace])
+}
+
