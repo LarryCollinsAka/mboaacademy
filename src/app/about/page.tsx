@@ -1,32 +1,16 @@
+"use client";
+
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Star, MapPin, CheckCircle2, Users, Sun, Wifi, ShieldCheck, HeartHandshake } from "lucide-react";
+import { Star, MapPin, CheckCircle2, Sun, Wifi, ShieldCheck, Clock, Award, Compass } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n";
 
 export default function AboutPage() {
-  const leadership = [
-    {
-      name: "Dr. Paul Ebanda",
-      role: "Founder & Head of Pedagogy",
-      bio: "Ex-Google Senior Staff Engineer and African Tech Fellow. Passionate about bringing world-class systems engineering directly to youth in Cameroon and across Africa.",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-      name: "Marcelle Nguena",
-      role: "VP of Industry Placements",
-      bio: "Former Tech Recruiter connecting African engineering talent to high-growth startups in San Francisco, London, Paris, and Kigali.",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-      name: "Cedric Fomekong",
-      role: "Lead AI & Graph Architect",
-      bio: "Researcher in Knowledge Graphs and Vector Embeddings. Leads applied AI curricula covering Qdrant, FalkorDB, and production LLMs.",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
-    },
-  ];
+  const { t } = useI18n();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090a0f] text-slate-100 selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210] selection:bg-[#ffcd00] selection:text-black">
       <Navbar />
 
       <main className="flex-1 py-16">
@@ -34,194 +18,183 @@ export default function AboutPage() {
           
           {/* Header */}
           <div className="text-center max-w-4xl mx-auto space-y-5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25">
-              <Star className="w-3.5 h-3.5 fill-current" />
-              Our Mission & Campuses
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ffcd00]/20 border border-[#ffcd00] text-xs font-bold text-[#0d1210]">
+              <Star className="w-3.5 h-3.5 fill-[#0d1210]" />
+              Mission & Assessment Standards
             </div>
-            <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">
-              Building the Future of African Tech, <span className="gold-gradient-text">One World-Class Engineer at a Time</span>
+            <h1 className="text-4xl sm:text-6xl font-black text-[#0d1210] tracking-tight">
+              Bridging the gap between knowledge, <span className="underline decoration-[#ffcd00] decoration-wavy">execution, and ownership</span>.
             </h1>
-            <p className="text-zinc-400 text-lg leading-relaxed max-w-3xl mx-auto">
-              Mboa Academy was born in Cameroon with an uncompromising premise: African engineers possess unlimited talent, but deserve world-tier physical learning environments, high-speed connectivity, and an AI-accelerated curriculum.
+            <p className="text-[#4d5953] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
+              HCIL Academy was founded on an unapologetic belief: Education should do more than prepare people to seek employment. It should teach people how money works, how economic value is created, and how to build assets that last.
             </p>
           </div>
 
-          {/* Physical Campuses Showcase */}
-          <div className="space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-6">
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                  Physical Footprint
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
-                  Our On-Site Innovation Hubs
-                </h2>
+          {/* Core Beliefs (Directly from user's manifesto) */}
+          <div className="cream-card p-8 sm:p-12 rounded-3xl bg-white border border-[#0d1210]/10 shadow-sm space-y-8">
+            <div className="max-w-3xl space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#059669]">
+                Our Core Philosophy
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0d1210]">
+                All Paths Are Valid. Financial Intelligence Empowers All of Them.
+              </h2>
+              <p className="text-xs sm:text-sm text-[#4d5953] leading-relaxed">
+                Schooling gives knowledge. Practice develops capability. Creating value opens opportunities. Financial intelligence helps you make deliberate decisions with the money you generate. Ownership gives you the opportunity to build something that endures.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-[#0d1210]/5">
+              <div className="p-5 rounded-2xl bg-[#fbf9f1] border border-[#0d1210]/5 space-y-2">
+                <span className="text-xs font-black text-[#0d1210] uppercase tracking-wider">Employment</span>
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  A valid and valuable path. When you understand business cash flow and customer value, you become a high-impact contributor worthy of promotion.
+                </p>
               </div>
-              <p className="text-xs text-zinc-400 max-w-md">
-                Equipped with industrial solar backups, low-latency gigabit fiber, and 24/7 dedicated engineering desks.
+
+              <div className="p-5 rounded-2xl bg-[#fbf9f1] border border-[#0d1210]/5 space-y-2">
+                <span className="text-xs font-black text-[#0d1210] uppercase tracking-wider">Freelancing & Services</span>
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  A powerful bridge. Learn to price by value, package deliverables clearly, control overhead, and retain net cash rather than selling raw hours.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#fbf9f1] border border-[#0d1210]/5 space-y-2">
+                <span className="text-xs font-black text-[#0d1210] uppercase tracking-wider">Enterprise & Assets</span>
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  The long-term objective. Document standard operating procedures (SOPs), coordinate teams, and build durable systems that survive beyond your daily labor.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Assessment Standards: Practical Evidence Alongside Credentials */}
+          <div className="space-y-6">
+            <div className="max-w-2xl space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#059669]">
+                Objective Proof-of-Work
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0d1210]">
+                Practical Evidence Alongside Recognized Credentials
+              </h2>
+              <p className="text-xs text-[#4d5953]">
+                We do not dismiss conventional credentials, but we know employers and clients hire for execution.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-3 shadow-sm">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#0d1210]">
+                  <CheckCircle2 className="w-4 h-4 text-[#059669]" />
+                  <span>Transparent Assessment Rubrics</span>
+                </div>
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  Every submission (whether a customer support escalation framework or an executive calendar audit) is scored against objective criteria by experienced operators.
+                </p>
+              </div>
+
+              <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-3 shadow-sm">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#0d1210]">
+                  <CheckCircle2 className="w-4 h-4 text-[#059669]" />
+                  <span>Real Client Scenarios & Simulations</span>
+                </div>
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  Learners work through realistic briefs, calculate the economic impact of their work, and present auditable deliverables that clients can review.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Campus Footprint: Truthful distinction between Active Online and Planned Hubs */}
+          <div className="space-y-8">
+            <div className="space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#059669]">
+                Learning Environments
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0d1210]">
+                Active Online Streaming & Planned Physical Hubs
+              </h2>
+              <p className="text-xs text-[#4d5953]">
+                Live interactive streaming available today, with dedicated physical lab spaces entering pilot development.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Douala Hub */}
-              <div className="mercor-card p-8 rounded-3xl border border-amber-500/30 space-y-6">
+              <div className="cream-card p-8 rounded-3xl bg-white border border-[#0d1210]/10 space-y-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <div className="w-10 h-10 rounded-xl bg-[#ffcd00]/20 flex items-center justify-center text-[#0d1210]">
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-white">Douala Innovation Hub</h3>
-                      <p className="text-xs text-zinc-400">Akwa Business District, Douala</p>
+                      <h3 className="text-lg font-bold text-[#0d1210]">Douala Innovation Hub</h3>
+                      <p className="text-xs text-[#5f6c65]">Akwa Business District, Douala</p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active Lab
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#ffcd00]/30 text-[#0d1210]">
+                    Pilot Planning Phase
                   </span>
                 </div>
 
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  Located in the economic heartbeat of Cameroon, our Douala campus houses 60 dedicated developer stations, 2 hardware test benches, an amphitheater for live code pitch days, and silent focus booths.
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  Planned physical center in Douala designed to provide dedicated workstations, high-speed fiber internet, 24/7 solar power backup, and in-person mentor code & offer reviews.
                 </p>
 
-                <div className="grid grid-cols-2 gap-3 text-xs text-zinc-400 pt-2 border-t border-white/5">
-                  <div className="flex items-center gap-2">
-                    <Sun className="w-4 h-4 text-amber-400" />
-                    <span>25kVA Solar Inverter</span>
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-[#5f6c65] pt-2 border-t border-[#0d1210]/5">
+                  <div className="flex items-center gap-1.5">
+                    <Sun className="w-3.5 h-3.5 text-[#059669]" />
+                    <span>Industrial Solar Inverter</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Wifi className="w-4 h-4 text-emerald-400" />
-                    <span>1Gbps Redundant Fiber</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-amber-400" />
-                    <span>Daily Mentor Office Hours</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-red-400" />
-                    <span>Access 8:00 AM - 9:00 PM</span>
+                  <div className="flex items-center gap-1.5">
+                    <Wifi className="w-3.5 h-3.5 text-[#059669]" />
+                    <span>Redundant Fiber Connection</span>
                   </div>
                 </div>
               </div>
 
               {/* Yaounde Hub */}
-              <div className="mercor-card p-8 rounded-3xl border border-white/10 hover:border-amber-500/30 space-y-6">
+              <div className="cream-card p-8 rounded-3xl bg-white border border-[#0d1210]/10 space-y-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <div className="w-10 h-10 rounded-xl bg-[#ffcd00]/20 flex items-center justify-center text-[#0d1210]">
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-white">Yaounde Tech Campus</h3>
-                      <p className="text-xs text-zinc-400">Bastos Diplomatic Quarter, Yaounde</p>
+                      <h3 className="text-lg font-bold text-[#0d1210]">Yaoundé Tech Campus</h3>
+                      <p className="text-xs text-[#5f6c65]">Bastos Innovation Quarter, Yaoundé</p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active Lab
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#ffcd00]/30 text-[#0d1210]">
+                    Pilot Planning Phase
                   </span>
                 </div>
 
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  Situated in Bastos, our Yaounde tech space hosts collaborative software sprint rooms, mentor breakout areas, high-speed satellite backup, and our applied AI experimentation team.
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  Planned collaborative sprint rooms in Bastos designed for peer-led accountability pods, customer discovery mock interviews, and project defenses.
                 </p>
 
-                <div className="grid grid-cols-2 gap-3 text-xs text-zinc-400 pt-2 border-t border-white/5">
-                  <div className="flex items-center gap-2">
-                    <Sun className="w-4 h-4 text-amber-400" />
-                    <span>Dual Solar-Grid Hybrid</span>
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-[#5f6c65] pt-2 border-t border-[#0d1210]/5">
+                  <div className="flex items-center gap-1.5">
+                    <Sun className="w-3.5 h-3.5 text-[#059669]" />
+                    <span>Hybrid Solar Backup</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Wifi className="w-4 h-4 text-emerald-400" />
-                    <span>Low-Latency Fiber + Starlink</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-amber-400" />
-                    <span>Weekly Mock Interviews</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-red-400" />
-                    <span>Quiet Coding Rooms</span>
+                  <div className="flex items-center gap-1.5">
+                    <Wifi className="w-3.5 h-3.5 text-[#059669]" />
+                    <span>High-Speed Broadband</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Pedagogy Pillars */}
-          <div className="mercor-card p-10 sm:p-14 rounded-3xl border border-amber-500/20 bg-gradient-to-b from-[#10131d] to-[#090a0f]">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-8 text-center">
-              Our 3 Educational Pillars
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-3">
-                <div className="text-amber-400 text-3xl font-extrabold font-mono">01.</div>
-                <h3 className="text-lg font-bold text-white">Production-Ready Code</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  No toy apps or superficial tutorials. Every student writes production code with TypeScript, tests, database migrations, and CI/CD pipelines deployed live to Vercel.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="text-amber-400 text-3xl font-extrabold font-mono">02.</div>
-                <h3 className="text-lg font-bold text-white">AI-Native Engineering</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  We integrate modern vector search (Qdrant) and graph databases (FalkorDB). Students learn how to build real-world cognitive architectures and high-throughput systems.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="text-amber-400 text-3xl font-extrabold font-mono">03.</div>
-                <h3 className="text-lg font-bold text-white">High-Stakes Accountability</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Physical presence or scheduled live syncs keep students engaged. Pair programming, weekly project presentations, and code review gauntlets build unstoppable confidence.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Academic Leadership */}
-          <div className="space-y-8">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                Mentorship by Practicing Engineers
-              </h2>
-              <p className="text-xs text-zinc-400">
-                You are taught directly by professionals who build and deploy enterprise software daily.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {leadership.map((leader, lIdx) => (
-                <div
-                  key={lIdx}
-                  className="mercor-card p-6 rounded-2xl space-y-4 hover:border-amber-500/40 transition-colors"
-                >
-                  <img
-                    src={leader.avatar}
-                    alt={leader.name}
-                    className="w-20 h-20 rounded-2xl object-cover border-2 border-amber-500/30"
-                  />
-                  <div>
-                    <h3 className="text-lg font-bold text-white">{leader.name}</h3>
-                    <p className="text-xs text-amber-400 font-semibold">{leader.role}</p>
-                  </div>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    {leader.bio}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom CTA */}
+          {/* CTA */}
           <div className="text-center py-6">
             <Link
               href="/courses"
-              className="gold-btn px-8 py-4 rounded-xl text-sm font-semibold inline-flex items-center gap-2"
+              className="btn-dark px-8 py-4 rounded-full text-xs font-bold inline-flex items-center gap-2 shadow-sm"
             >
-              Explore Available Cohorts & Apply
+              Explore Initial Launch Tracks
             </Link>
           </div>
 

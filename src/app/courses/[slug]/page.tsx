@@ -1,13 +1,11 @@
 "use client";
 
-import { use } from "react";
-import { notFound } from "next/navigation";
+import { use, useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { COURSES_DATA } from "@/data/courses";
+import { CourseWithDetails } from "@/lib/courses-service";
 import { PaymentModal } from "@/components/checkout/PaymentModal";
 import Link from "next/link";
-import { useState } from "react";
 import {
   Clock,
   Star,
@@ -15,12 +13,13 @@ import {
   CheckCircle2,
   PlayCircle,
   Lock,
-  Calendar,
-  Sparkles,
-  ArrowRight,
-  CreditCard,
   Building,
-  GraduationCap
+  CreditCard,
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+  TrendingUp,
+  DollarSign
 } from "lucide-react";
 
 export default function CourseDetailPage({
@@ -29,76 +28,122 @@ export default function CourseDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-  const course = COURSES_DATA.find((c) => c.slug === slug);
+  const [course, setCourse] = useState<CourseWithDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
+  useEffect(() => {
+    async function fetchCourse() {
+      try {
+        const res = await fetch("/api/courses");
+        if (res.ok) {
+          const data = await res.json();
+          const match = (data.courses || []).find((c: CourseWithDetails) => c.slug === slug);
+          setCourse(match || null);
+        }
+      } catch (e) {
+        console.warn("Failed fetching course detail", e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchCourse();
+  }, [slug]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210]">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center py-32">
+          <div className="text-center space-y-3">
+            <div className="w-10 h-10 border-3 border-[#071f15] border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs text-[#5f6c65] font-semibold">Loading HCIL curriculum...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!course) {
-    return notFound();
+    return (
+      <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210]">
+        <Navbar />
+        <main className="flex-1 max-w-xl mx-auto py-24 text-center space-y-4 px-4">
+          <h1 className="text-2xl font-bold">Course Not Found</h1>
+          <p className="text-sm text-[#4d5953]">The requested HCIL program could not be located in the database.</p>
+          <Link href="/courses" className="btn-dark px-6 py-2.5 rounded-full text-xs font-bold inline-block">
+            View All Programs
+          </Link>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   const firstLesson = course.modules[0]?.lessons[0];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090a0f] text-slate-100 selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210] selection:bg-[#ffcd00] selection:text-black">
       <Navbar />
 
       <main className="flex-1 py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
           
-          {/* Top Breadcrumb & Badge */}
+          {/* Breadcrumb & Badges */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-xs text-zinc-400">
-              <Link href="/courses" className="hover:text-amber-400">
-                Courses
+            <div className="flex items-center gap-2 text-xs text-[#5f6c65]">
+              <Link href="/courses" className="hover:text-[#0d1210] font-medium">
+                Programs
               </Link>
               <span>/</span>
-              <span className="text-zinc-200">{course.category}</span>
+              <span>{course.category}</span>
               <span>/</span>
-              <span className="text-amber-400 font-semibold">{course.title}</span>
+              <span className="text-[#0d1210] font-bold">{course.title}</span>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/30">
+              <span className="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full bg-[#ffcd00]/30 text-[#0d1210]">
                 {course.badge || course.category}
               </span>
-              <span className="text-xs font-semibold px-3 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] border border-[#059669]/20 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
                 {course.mode} Learning Mode
               </span>
-              <span className="text-xs text-zinc-400">
-                <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 inline mr-1" />
-                {course.rating} ({course.studentsCount} alumni)
+              <span className="text-xs text-[#5f6c65] font-semibold">
+                <Star className="w-3.5 h-3.5 text-[#ffcd00] fill-[#ffcd00] inline mr-1" />
+                {course.rating} &bull; {course.studentsCount} Active Learners
               </span>
             </div>
           </div>
 
-          {/* Hero Section & Pricing Card */}
+          {/* Hero Split */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
             
-            {/* Left 2 Cols: Details */}
+            {/* Left 2 Cols: Course Overview */}
             <div className="lg:col-span-2 space-y-8">
               <div className="space-y-4">
-                <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                <h1 className="text-3xl sm:text-5xl font-black text-[#0d1210] tracking-tight leading-tight">
                   {course.title}
                 </h1>
-                <p className="text-base sm:text-lg text-zinc-300 leading-relaxed">
+                <p className="text-base sm:text-lg font-medium text-[#2d332f] leading-relaxed">
                   {course.headline}
                 </p>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-sm text-[#4d5953] leading-relaxed">
                   {course.description}
                 </p>
               </div>
 
-              {/* Skills Taught */}
+              {/* Skills and Competencies */}
               <div className="space-y-3">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400">
-                  Core Technologies & Graph Ontologies Taught
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#071f15]">
+                  Verified Skills & Economic Outcomes Taught
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {course.skills.map((skill, idx) => (
                     <span
                       key={idx}
-                      className="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/5 text-zinc-200 border border-white/10"
+                      className="text-xs font-mono font-semibold px-3 py-1.5 rounded-lg bg-white border border-[#0d1210]/10 text-[#0d1210] shadow-sm"
                     >
                       {skill}
                     </span>
@@ -106,91 +151,91 @@ export default function CourseDetailPage({
                 </div>
               </div>
 
-              {/* On-Site Campuses Options */}
-              <div className="mercor-card p-6 rounded-2xl border border-amber-500/30 space-y-4">
+              {/* Physical Campus Facilities */}
+              <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-4 shadow-sm">
                 <div className="flex items-center gap-2.5">
-                  <Building className="w-5 h-5 text-emerald-400" />
-                  <h3 className="text-base font-bold text-white">
-                    Physical Campus Access Included
+                  <Building className="w-5 h-5 text-[#059669]" />
+                  <h3 className="text-base font-bold text-[#0d1210]">
+                    Physical Campus Lab Access (Douala & Yaounde)
                   </h3>
                 </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Enrollment in this cohort includes a dedicated lab desk at both Douala (Akwa) and Yaounde (Bastos) facilities, high-speed fiber internet, solar backup, and in-person mentor code reviews.
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  Enrollment includes a dedicated desk at our Douala (Akwa) and Yaounde (Bastos) innovation hubs, continuous industrial solar power, 1Gbps fiber broadband, and in-person mentor code reviews.
                 </p>
-                <div className="flex flex-wrap gap-4 text-xs text-zinc-400 pt-2 border-t border-white/5">
+                <div className="flex flex-wrap gap-4 text-xs font-medium text-[#4d5953] pt-2 border-t border-[#0d1210]/5">
                   <span className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-                    Douala Innovation Hub
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
+                    Akwa Innovation Hub, Douala
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    Yaounde Tech Campus
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
+                    Bastos Tech Campus, Yaounde
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-                    Global Live Video Sync
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
+                    Live Interactive Stream Worldwide
                   </span>
                 </div>
               </div>
 
             </div>
 
-            {/* Right Col: Pricing & Enrollment Action Card */}
-            <div className="mercor-card p-8 rounded-3xl border border-amber-500/40 sticky top-28 space-y-6 bg-gradient-to-b from-[#11131c] to-[#090a0f]">
+            {/* Right Col: Tuition & Enrollment Card */}
+            <div className="cream-card p-8 rounded-3xl bg-white border-2 border-[#ffcd00] sticky top-28 space-y-6 shadow-md">
               <div className="space-y-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                  Full Cohort Tuition
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#059669]">
+                  Total Program Tuition
                 </span>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold text-white">
+                  <span className="text-4xl font-black text-[#0d1210]">
                     ${course.priceUSD}
                   </span>
-                  <span className="text-sm text-zinc-400">
+                  <span className="text-sm text-[#5f6c65] font-semibold">
                     / {course.priceXAF.toLocaleString()} XAF
                   </span>
                 </div>
-                <p className="text-xs text-emerald-400 font-medium">
-                  Includes all lectures, lab seat, LMS notes, and job placement support.
+                <p className="text-xs text-[#059669] font-bold">
+                  Flexible installment plans & MTN/Orange Money accepted
                 </p>
               </div>
 
               <div className="space-y-3 pt-2">
                 <button
                   onClick={() => setIsPaymentOpen(true)}
-                  className="gold-btn w-full py-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+                  className="btn-dark w-full py-4 rounded-full text-sm font-bold flex items-center justify-center gap-2 shadow-sm"
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Enroll in Cohort</span>
+                  <span>Enroll in Program</span>
                 </button>
 
                 {firstLesson && (
                   <Link
                     href={`/lms/learn/${course.slug}/${firstLesson.slug}`}
-                    className="w-full py-3 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white border border-white/10 hover:border-amber-500/40 flex items-center justify-center gap-2 transition-all"
+                    className="w-full py-3 rounded-full text-xs font-bold text-[#0d1210] bg-[#fbf9f1] hover:bg-[#ffcd00]/20 border border-[#0d1210]/15 flex items-center justify-center gap-2 transition-all"
                   >
-                    <PlayCircle className="w-4 h-4 text-amber-400" />
-                    <span>Try Free Preview in LMS</span>
+                    <PlayCircle className="w-4 h-4 text-[#059669]" />
+                    <span>Free Preview in Student Studio</span>
                   </Link>
                 )}
               </div>
 
-              {/* Quick Perks */}
-              <div className="space-y-2.5 pt-4 border-t border-white/5 text-xs text-zinc-300">
+              {/* Quick Pillars Perks */}
+              <div className="space-y-2.5 pt-4 border-t border-[#0d1210]/10 text-xs text-[#2b332f] font-medium">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>{course.durationWeeks} weeks intensive curriculum</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
+                  <span>{course.durationWeeks} weeks practical progression</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>On-site desk + 24/7 solar power</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
+                  <span>Physical lab desk + 24/7 solar power</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>AI LMS with notes & assignment auto-grading</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
+                  <span>Cash flow simulator + student notes studio</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>MTN MoMo, Orange Money & Stripe accepted</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
+                  <span>Verified HCIL capability certificate</span>
                 </div>
               </div>
 
@@ -198,17 +243,17 @@ export default function CourseDetailPage({
 
           </div>
 
-          {/* Curriculum Syllabus & Modules Section */}
-          <div className="space-y-6 pt-8 border-t border-white/10">
+          {/* Curriculum Breakdown */}
+          <div className="space-y-6 pt-8 border-t border-[#0d1210]/10">
             <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-                Course Syllabus
+              <span className="text-xs font-bold uppercase tracking-wider text-[#059669]">
+                Structured Progression
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                Curriculum Breakdown
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0d1210]">
+                Curriculum Modules & Lessons
               </h2>
-              <p className="text-xs text-zinc-400">
-                Hands-on practical modules with code exercises, assignments, and student notes.
+              <p className="text-xs text-[#4d5953]">
+                Practical exercises, financial simulations, and genuine client problem-solving.
               </p>
             </div>
 
@@ -216,57 +261,57 @@ export default function CourseDetailPage({
               {course.modules.map((mod, mIdx) => (
                 <div
                   key={mod.id}
-                  className="mercor-card rounded-2xl border border-white/10 overflow-hidden"
+                  className="cream-card rounded-2xl bg-white border border-[#0d1210]/10 overflow-hidden shadow-sm"
                 >
-                  <div className="p-5 bg-white/[0.02] border-b border-white/5 flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <span className="text-amber-400 font-mono">Module {mIdx + 1}:</span>
+                  <div className="p-5 bg-[#fbf9f1] border-b border-[#0d1210]/5 flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-[#0d1210] flex items-center gap-2">
+                      <span className="text-[#059669] font-mono">Module {mIdx + 1}:</span>
                       {mod.title}
                     </h3>
-                    <span className="text-xs text-zinc-400">
+                    <span className="text-xs text-[#5f6c65] font-semibold">
                       {mod.lessons.length} Lessons
                     </span>
                   </div>
 
-                  <div className="divide-y divide-white/5">
+                  <div className="divide-y divide-[#0d1210]/5">
                     {mod.lessons.map((lesson) => (
                       <div
                         key={lesson.id}
-                        className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                        className="p-4 flex items-center justify-between hover:bg-[#fbf9f1]/60 transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           {lesson.isFreePreview ? (
-                            <PlayCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <PlayCircle className="w-4 h-4 text-[#059669] shrink-0" />
                           ) : (
-                            <Lock className="w-4 h-4 text-zinc-500 shrink-0" />
+                            <Lock className="w-4 h-4 text-[#8a9690] shrink-0" />
                           )}
                           <div>
-                            <h4 className="text-xs font-semibold text-zinc-200">
+                            <h4 className="text-xs font-bold text-[#0d1210]">
                               {lesson.title}
                             </h4>
-                            <p className="text-[11px] text-zinc-400">
+                            <p className="text-[11px] text-[#5f6c65]">
                               {lesson.summary}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-4 shrink-0">
-                          <span className="text-xs text-zinc-400 flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-amber-400" />
+                          <span className="text-xs text-[#5f6c65] flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-[#059669]" />
                             {lesson.durationMinutes} min
                           </span>
 
                           {lesson.isFreePreview ? (
                             <Link
                               href={`/lms/learn/${course.slug}/${lesson.slug}`}
-                              className="px-3 py-1 rounded-md text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
+                              className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#059669]/10 text-[#059669] hover:bg-[#059669]/20 transition-colors"
                             >
                               Free Preview
                             </Link>
                           ) : (
                             <button
                               onClick={() => setIsPaymentOpen(true)}
-                              className="px-3 py-1 rounded-md text-[11px] font-semibold text-zinc-400 hover:text-white border border-white/10"
+                              className="px-3 py-1 rounded-full text-[11px] font-semibold text-[#5f6c65] hover:text-[#0d1210] border border-[#0d1210]/15"
                             >
                               Enroll to Unlock
                             </button>
@@ -285,7 +330,7 @@ export default function CourseDetailPage({
 
       <Footer />
 
-      {/* Payment Modal for Stripe & MTN/Orange Mobile Money */}
+      {/* Payment Checkout Modal */}
       <PaymentModal
         isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}

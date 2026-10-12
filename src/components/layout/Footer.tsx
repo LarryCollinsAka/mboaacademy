@@ -1,109 +1,117 @@
 import Link from "next/link";
-import { Star, MapPin, Mail, Globe, ArrowUpRight } from "lucide-react";
+import { MapPin, Globe, ArrowUpRight } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#07080b] pt-16 pb-12 text-zinc-400">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/5">
+    <footer className="bg-[#071f15] text-[#9ca7a1] pt-16 pb-12 text-xs border-t border-white/5 relative">
+      {/* Top subtle Cameroon Flag tricolor line */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#007a3d] via-[#ce1126] to-[#fcd116]" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-10 border-b border-white/10">
           
           {/* Brand info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-                <Star className="w-4 h-4 text-black fill-black" />
+              <div className="w-9 h-9 rounded-full bg-[#ffcd00] flex items-center justify-center font-black text-[#071f15] text-xs">
+                HCIL
               </div>
-              <span className="text-lg font-bold text-white tracking-tight">
-                MBOA <span className="gold-gradient-text">ACADEMY</span>
+              <span className="text-base font-black text-white tracking-tight">
+                HCIL ACADEMY
               </span>
             </div>
-            <p className="text-sm text-zinc-400 leading-relaxed max-w-sm">
-              The premier career academy for on-demand job skills in Africa and beyond. Accelerated hybrid and on-site cohorts training world-class engineers, AI builders, and designers.
-            </p>
             
-            {/* Physical Campuses */}
-            <div className="pt-2 space-y-2 text-xs text-zinc-400">
+            <p className="text-xs text-zinc-300 leading-relaxed max-w-sm">
+              Equipping ambitious creators with financial intelligence, practical capabilities, and asset-building discipline. Moving beyond schooling into genuine economic agency.
+            </p>
+
+            <div className="pt-2 space-y-2 text-[11px] text-zinc-300">
               <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span><strong className="text-zinc-200">Douala Campus:</strong> Akwa Tech Hub, Cameroon</span>
+                <MapPin className="w-3.5 h-3.5 text-[#ffcd00] shrink-0" />
+                <span><strong>Douala Campus:</strong> Akwa Innovation Hub, Douala, Cameroon</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span><strong className="text-zinc-200">Yaounde Campus:</strong> Bastos Innovation Center, Cameroon</span>
+                <MapPin className="w-3.5 h-3.5 text-[#ffcd00] shrink-0" />
+                <span><strong>Yaounde Campus:</strong> Bastos Tech Campus, Yaounde, Cameroon</span>
               </div>
             </div>
           </div>
 
-          {/* Career Tracks */}
+          {/* Pillars */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-zinc-200 uppercase tracking-wider">
-              Career Tracks
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              Core Pillars
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-zinc-300">
               <li>
-                <Link href="/courses/full-stack-nextjs-postgres" className="hover:text-amber-400 transition-colors">
-                  Full-Stack Next.js 16
+                <Link href="/courses" className="hover:text-[#ffcd00] transition-colors">
+                  1. Money Intelligence
                 </Link>
               </li>
               <li>
-                <Link href="/courses/applied-ai-qdrant-falkordb" className="hover:text-amber-400 transition-colors">
-                  AI, Vector & Graph DBs
+                <Link href="/courses" className="hover:text-[#ffcd00] transition-colors">
+                  2. Value-Creating Skills
                 </Link>
               </li>
               <li>
-                <Link href="/courses/cloud-docker-devops" className="hover:text-amber-400 transition-colors">
-                  Cloud & Production DevOps
+                <Link href="/courses" className="hover:text-[#ffcd00] transition-colors">
+                  3. Entrepreneurship & Sales
                 </Link>
               </li>
               <li>
-                <Link href="/courses/ui-ux-product-design" className="hover:text-amber-400 transition-colors">
-                  UI/UX & Product Design
+                <Link href="/courses" className="hover:text-[#ffcd00] transition-colors">
+                  4. Ownership & Asset Building
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-[#ffcd00] transition-colors">
+                  5. Enterprise Lab
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Platform & AI */}
+          {/* Programs */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-zinc-200 uppercase tracking-wider">
-              Academy & AI LMS
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              Flagship & Studio
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-zinc-300">
               <li>
-                <Link href="/ai-advisor" className="hover:text-amber-400 transition-colors flex items-center gap-1">
-                  AI Career Matcher <ArrowUpRight className="w-3 h-3 text-amber-500" />
+                <Link href="/courses/from-skill-to-enterprise" className="text-[#ffcd00] font-semibold hover:underline flex items-center gap-1">
+                  From Skill to Enterprise (Pilot) <ArrowUpRight className="w-3 h-3" />
                 </Link>
               </li>
               <li>
-                <Link href="/lms/dashboard" className="hover:text-amber-400 transition-colors">
-                  Student Portal & Notes
+                <Link href="/ai-advisor" className="hover:text-[#ffcd00] transition-colors">
+                  Financial IQ & Skill Matcher
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-amber-400 transition-colors">
-                  On-site Campus Labs
+                <Link href="/lms/dashboard" className="hover:text-[#ffcd00] transition-colors">
+                  Student Studio & Notes
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-amber-400 transition-colors">
-                  Career Intelligence Blog
+                <Link href="/about" className="hover:text-[#ffcd00] transition-colors">
+                  Campus Lab Facilities
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Tech Architecture badge */}
+          {/* Technology & Enterprise */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-zinc-200 uppercase tracking-wider">
-              Enterprise Tech Stack
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              Architecture
             </h4>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Engineered with <span className="text-white font-medium">Next.js 16</span>, <span className="text-white font-medium">PostgreSQL</span>, <span className="text-white font-medium">Qdrant Vector DB</span>, <span className="text-white font-medium">FalkorDB Graph</span>, <span className="text-white font-medium">Redis</span>, and Vercel.
+            <p className="text-[11px] text-zinc-300 leading-relaxed">
+              Built on PostgreSQL, Qdrant Vector Search, FalkorDB Knowledge Graphs, and Redis Caching. Deployed on Vercel Edge.
             </p>
-            <div className="pt-2 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] bg-emerald-950/60 text-emerald-400 border border-emerald-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Next Cohort Admissions Open
+            <div className="pt-1">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] bg-white/10 text-[#ffcd00] border border-[#ffcd00]/30 font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#ffcd00] animate-pulse" />
+                Next Cohort Applications Open
               </span>
             </div>
           </div>
@@ -111,10 +119,10 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-400 gap-4">
-          <p>© {new Date().getFullYear()} Mboa Academy Inc. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <span className="text-amber-400/80">Proudly Founded in Cameroon &bull; Built for Global Careers</span>
+        <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-300 gap-4">
+          <p>© {new Date().getFullYear()} HCIL Academy. Learn. Build. Earn. Own. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            <span>🇨🇲 Founded in Cameroon &bull; Built for Global Economic Agency</span>
           </div>
         </div>
 

@@ -1,8 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
-import { notFound } from "next/navigation";
-import { COURSES_DATA } from "@/data/courses";
+import { CourseWithDetails } from "@/lib/courses-service";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -18,7 +17,8 @@ import {
   Bot,
   HelpCircle,
   ListTodo,
-  Star
+  Star,
+  DollarSign
 } from "lucide-react";
 
 export default function LMSClassroomPage({
@@ -27,41 +27,82 @@ export default function LMSClassroomPage({
   params: Promise<{ courseSlug: string; lessonSlug: string }>;
 }) {
   const { courseSlug, lessonSlug } = use(params);
-  const course = COURSES_DATA.find((c) => c.slug === courseSlug);
+  const [course, setCourse] = useState<CourseWithDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!course) return notFound();
-
-  // Find current lesson
-  let currentLesson = course.modules[0]?.lessons[0];
-  let currentModuleTitle = course.modules[0]?.title || "";
-
-  for (const mod of course.modules) {
-    const match = mod.lessons.find((l) => l.slug === lessonSlug);
-    if (match) {
-      currentLesson = match;
-      currentModuleTitle = mod.title;
-      break;
-    }
-  }
-
-  // Active Tab: "summary" | "notes" | "assignments" | "ai"
-  const [activeTab, setActiveTab] = useState<"summary" | "notes" | "assignments" | "ai">("notes");
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<"notes" | "summary" | "assignments" | "ai">("notes");
 
   // Student Notes state
   const [notes, setNotes] = useState<string>("");
   const [isSaved, setIsSaved] = useState<boolean>(true);
 
-  // Initialize or load notes from localStorage
+  // Assignment Submission state
+  const [deliverableUrl, setDeliverableUrl] = useState("");
+  const [submissionNotes, setSubmissionNotes] = useState("");
+  const [submissionStatus, setSubmissionStatus] = useState<"IDLE" | "SUBMITTING" | "GRADED">("IDLE");
+
+  // AI Chat Assistant
+  const [chatMessages, setChatMessages] = useState<
+    Array<{ sender: "user" | "ai"; text: string }>
+  >([
+    {
+      sender: "ai",
+      text: "Hello! I am your HCIL Learning & Financial Intelligence Assistant. Ask me how to calculate unit margins, structure cash flow balance sheets, or test business assumptions for this lesson!",
+    },
+  ]);
+  const [inputQuestion, setInputQuestion] = useState("");
+  const [isAILoading, setIsAILoading] = useState(false);
+
   useEffect(() => {
-    const storageKey = `mboa_note_${courseSlug}_${lessonSlug}`;
+    async function loadCourse() {
+      try {
+        const res = await fetch("/api/courses");
+        if (res.ok) {
+          const data = await res.json();
+          const match = (data.courses || []).find((c: CourseWithDetails) => c.slug === courseSlug);
+          setCourse(match || null);
+        }
+      } catch (e) {
+        console.warn("Failed fetching course", e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadCourse();
+  }, [courseSlug]);
+
+  // Current lesson & module title
+  let currentLesson: any = null;
+  let currentModuleTitle = "";
+
+  if (course) {
+    for (const mod of course.modules) {
+      const match = mod.lessons.find((l) => l.slug === lessonSlug);
+      if (match) {
+        currentLesson = match;
+        currentModuleTitle = mod.title;
+        break;
+      }
+    }
+    if (!currentLesson && course.modules[0]?.lessons[0]) {
+      currentLesson = course.modules[0].lessons[0];
+      currentModuleTitle = course.modules[0].title;
+    }
+  }
+
+  // Load notes from storage
+  useEffect(() => {
+    if (!currentLesson) return;
+    const storageKey = `hcil_notes_${courseSlug}_${lessonSlug}`;
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       setNotes(saved);
-    } else if (currentLesson?.notesDefault) {
+    } else if (currentLesson.notesDefault) {
       setNotes(currentLesson.notesDefault);
     } else {
       setNotes(
-        `# Notes: ${currentLesson?.title}\n\n- Key concept 1:\n- Code snippet:\n\`\`\`typescript\n// Write your code reflections here\n\`\`\`\n\n- Questions for mentor:`
+        `# Notes: ${currentLesson.title}\n\n- How this creates commercial value:\n- Cash flow & cost implications:\n- Key action points:`
       );
     }
   }, [courseSlug, lessonSlug, currentLesson]);
@@ -69,7 +110,7 @@ export default function LMSClassroomPage({
   const handleNotesChange = (text: string) => {
     setNotes(text);
     setIsSaved(false);
-    const storageKey = `mboa_note_${courseSlug}_${lessonSlug}`;
+    const storageKey = `hcil_notes_${courseSlug}_${lessonSlug}`;
     localStorage.setItem(storageKey, text);
     setTimeout(() => setIsSaved(true), 600);
   };
@@ -79,15 +120,10 @@ export default function LMSClassroomPage({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${lessonSlug}-notes.md`;
+    a.download = `${lessonSlug}-hcil-notes.md`;
     a.click();
     URL.revokeObjectURL(url);
   };
-
-  // Assignment Submission state
-  const [githubUrl, setGithubUrl] = useState("");
-  const [submissionText, setSubmissionText] = useState("");
-  const [submissionStatus, setSubmissionStatus] = useState<"IDLE" | "SUBMITTING" | "GRADED">("IDLE");
 
   const handleAssignmentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,18 +132,6 @@ export default function LMSClassroomPage({
       setSubmissionStatus("GRADED");
     }, 1500);
   };
-
-  // AI Assistant Chat state
-  const [chatMessages, setChatMessages] = useState<
-    Array<{ sender: "user" | "ai"; text: string }>
-  >([
-    {
-      sender: "ai",
-      text: `Hello! I am your Mboa AI Lecture Assistant for "${currentLesson?.title}". Ask me any question, request code examples, or ask for a quiz!`,
-    },
-  ]);
-  const [inputQuestion, setInputQuestion] = useState("");
-  const [isAILoading, setIsAILoading] = useState(false);
 
   const handleSendMessage = (textToSend?: string) => {
     const q = textToSend || inputQuestion;
@@ -121,108 +145,122 @@ export default function LMSClassroomPage({
       let aiReply = "";
       const lower = q.toLowerCase();
 
-      if (lower.includes("quiz") || lower.includes("test")) {
-        aiReply = `Here is a practice quiz on **${currentLesson?.title}**:\n\n**Question:** Why do Server Components reduce client-side bundle size compared to traditional client components?\n\nA) They bundle CSS into HTML\nB) Their JavaScript dependencies remain on the server and are never downloaded by the browser.\nC) They eliminate HTTP requests entirely.\n\n*(Think about it, or reply with your answer!)*`;
-      } else if (lower.includes("example") || lower.includes("code")) {
-        aiReply = `Here is a production code pattern for this module:\n\n\`\`\`typescript\n// src/lib/fetchData.ts\nexport async function getCohortData(cohortId: string) {\n  const res = await fetch(\`https://api.mboaacademy.com/cohorts/\${cohortId}\`, {\n    next: { revalidate: 60 } // Next.js cache revalidation\n  });\n  return res.json();\n}\n\`\`\`\nThis combines automatic caching with fast Edge revalidation!`;
+      if (lower.includes("cash flow") || lower.includes("margin") || lower.includes("money")) {
+        aiReply = `In this module on **${currentLesson?.title || "Value Creation"}**, remember: Cash flow is reality, profit is an accounting estimate. Always calculate:\n\n**Net Cash Flow = Cash Inflows - Cash Outflows**.\n\nNever price services solely on hourly time; price based on the commercial impact created for the client!`;
+      } else if (lower.includes("simulation") || lower.includes("test")) {
+        aiReply = `Here is a practical simulation challenge:\n\nIf your operating overhead is $400/month and each client pays $600/month on retainer, you break even with **1 client** and reach 66% net margins with **2 clients**. How would you structure your proposal to guarantee client ROI?`;
       } else {
-        aiReply = `Great question regarding **${currentLesson?.title}**! In production environments (especially when deploying to Vercel with PostgreSQL & Redis), maintaining clean separation of concerns and caching dynamic queries gives you sub-50ms response times. Would you like me to generate a step-by-step implementation guide?`;
+        aiReply = `Great observation on **${currentLesson?.title}**! In HCIL's proof-of-work framework, focus on documenting the measurable deliverable before seeking payment. Would you like me to generate an executive template for your student notes?`;
       }
 
       setChatMessages((prev) => [...prev, { sender: "ai", text: aiReply }]);
       setIsAILoading(false);
-    }, 1000);
+    }, 900);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#fbf9f1] text-[#0d1210]">
+        <div className="w-10 h-10 border-3 border-[#071f15] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#fbf9f1] text-[#0d1210] p-4 text-center">
+        <h2 className="text-xl font-bold">Course not found</h2>
+        <Link href="/courses" className="mt-4 btn-dark px-6 py-2 rounded-full text-xs font-bold">
+          Back to Programs
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#07080b] text-slate-100 selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210]">
       
-      {/* Top Classroom Bar */}
-      <header className="h-16 border-b border-white/10 bg-[#0c0e14] px-4 sm:px-6 flex items-center justify-between z-30">
+      {/* Top Studio Bar */}
+      <header className="h-16 border-b border-[#0d1210]/10 bg-white px-4 sm:px-6 flex items-center justify-between z-30">
         <div className="flex items-center gap-4">
           <Link
             href={`/courses/${course.slug}`}
-            className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 border border-white/10 transition-colors"
+            className="p-2 rounded-full text-[#4d5953] hover:text-[#0d1210] hover:bg-[#fbf9f1] border border-[#0d1210]/10 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
 
           <div>
-            <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">
+            <span className="text-[10px] text-[#059669] font-black uppercase tracking-wider">
               {course.title}
             </span>
-            <h1 className="text-sm font-bold text-white truncate max-w-sm sm:max-w-md">
+            <h1 className="text-sm font-black text-[#0d1210] truncate max-w-sm sm:max-w-md">
               {currentLesson?.title}
             </h1>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 text-xs text-zinc-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Progress: 25%</span>
+          <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-[#059669]">
+            <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
+            <span>Progress: 35% Verified</span>
           </div>
 
           <Link
             href="/lms/dashboard"
-            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-200 border border-white/10"
+            className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#fbf9f1] hover:bg-[#ffcd00]/30 text-[#0d1210] border border-[#0d1210]/15"
           >
-            Exit to Dashboard
+            Student Studio
           </Link>
         </div>
       </header>
 
-      {/* Main Studio Split */}
+      {/* Main Studio Body */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         
-        {/* Left/Middle Content Studio */}
+        {/* Left/Middle Content */}
         <div className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
           
-          {/* Lecture Video Player Simulated Screen */}
-          <div className="w-full aspect-video rounded-2xl bg-black border border-white/10 relative overflow-hidden flex flex-col justify-between p-6 shadow-2xl group">
-            {/* Ambient glowing video glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-emerald-500/10 pointer-events-none" />
-
+          {/* Lecture / Simulation Screen */}
+          <div className="w-full aspect-video rounded-3xl bg-[#071f15] text-white relative overflow-hidden flex flex-col justify-between p-6 shadow-xl group border border-white/10">
             <div className="flex items-center justify-between z-10">
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-black/60 text-amber-400 backdrop-blur-md border border-amber-500/30">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-[#ffcd00] backdrop-blur-md border border-[#ffcd00]/30">
                 {currentModuleTitle}
               </span>
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-black/60 text-zinc-300 backdrop-blur-md border border-white/10">
-                HD 1080p &bull; Recorded On-Site Lab
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-black/40 text-zinc-300 backdrop-blur-md">
+                Interactive Simulation & Video &bull; 1080p
               </span>
             </div>
 
-            {/* Play Button Icon */}
             <div className="flex items-center justify-center z-10">
               <button
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-500 hover:bg-amber-400 text-black flex items-center justify-center shadow-xl shadow-amber-500/30 transition-transform group-hover:scale-105"
-                aria-label="Play Lecture"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#ffcd00] hover:bg-[#e6b800] text-[#0d1210] flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
+                aria-label="Play Simulation"
               >
-                <Play className="w-8 h-8 fill-black translate-x-0.5" />
+                <Play className="w-8 h-8 fill-current translate-x-0.5" />
               </button>
             </div>
 
-            {/* Bottom Progress Bar */}
             <div className="z-10 space-y-2">
               <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-400 w-1/3 rounded-full" />
+                <div className="h-full bg-[#ffcd00] w-1/3 rounded-full" />
               </div>
-              <div className="flex items-center justify-between text-[11px] text-zinc-400">
-                <span>05:30 / {currentLesson?.durationMinutes}:00</span>
-                <span>Speed: 1.0x &bull; English & French Subtitles</span>
+              <div className="flex items-center justify-between text-[11px] text-zinc-300">
+                <span>08:15 / {currentLesson?.durationMinutes}:00</span>
+                <span>Subtitles: English & Français (Contextual)</span>
               </div>
             </div>
           </div>
 
           {/* Interactive Study Tabs */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+            <div className="flex items-center gap-2 border-b border-[#0d1210]/10 pb-2 overflow-x-auto">
               <button
                 onClick={() => setActiveTab("notes")}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
                   activeTab === "notes"
-                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-[#ffcd00] text-[#0d1210] shadow-sm"
+                    : "text-[#4d5953] hover:text-[#0d1210]"
                 }`}
               >
                 <FileText className="w-4 h-4" />
@@ -231,52 +269,52 @@ export default function LMSClassroomPage({
 
               <button
                 onClick={() => setActiveTab("summary")}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
                   activeTab === "summary"
-                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-[#ffcd00] text-[#0d1210] shadow-sm"
+                    : "text-[#4d5953] hover:text-[#0d1210]"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
-                <span>AI Lecture Summary</span>
+                <span>Executive Summary</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("assignments")}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
                   activeTab === "assignments"
-                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-[#ffcd00] text-[#0d1210] shadow-sm"
+                    : "text-[#4d5953] hover:text-[#0d1210]"
                 }`}
               >
                 <ListTodo className="w-4 h-4" />
-                <span>Practical Assignment</span>
+                <span>Deliverable Task</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("ai")}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
                   activeTab === "ai"
-                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-[#ffcd00] text-[#0d1210] shadow-sm"
+                    : "text-[#4d5953] hover:text-[#0d1210]"
                 }`}
               >
                 <Bot className="w-4 h-4" />
-                <span>Ask AI Tutor</span>
+                <span>Ask AI Financial Tutor</span>
               </button>
             </div>
 
-            {/* TAB CONTENT: Student Notes */}
+            {/* TAB: Student Notes */}
             {activeTab === "notes" && (
-              <div className="mercor-card p-6 rounded-2xl border border-white/10 space-y-4">
+              <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-4 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-white">Your Notes for this Lesson</span>
+                    <span className="text-xs font-bold text-[#0d1210]">Your Notes on this Lesson</span>
                     <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full ${
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                         isSaved
-                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                          : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                          ? "bg-[#059669]/10 text-[#059669]"
+                          : "bg-[#ffcd00]/20 text-[#0d1210]"
                       }`}
                     >
                       {isSaved ? "Saved to Cloud" : "Saving..."}
@@ -285,9 +323,9 @@ export default function LMSClassroomPage({
 
                   <button
                     onClick={exportNotesAsMarkdown}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 flex items-center gap-1.5 transition-colors"
+                    className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#fbf9f1] hover:bg-[#0d1210]/10 text-[#0d1210] border border-[#0d1210]/15 flex items-center gap-1.5 transition-colors"
                   >
-                    <Download className="w-3.5 h-3.5 text-amber-400" />
+                    <Download className="w-3.5 h-3.5 text-[#059669]" />
                     <span>Download Markdown (.md)</span>
                   </button>
                 </div>
@@ -296,113 +334,113 @@ export default function LMSClassroomPage({
                   rows={8}
                   value={notes}
                   onChange={(e) => handleNotesChange(e.target.value)}
-                  placeholder="Type your notes, code insights, questions for the onsite mentor..."
-                  className="w-full p-4 rounded-xl bg-black/40 border border-white/10 text-xs text-zinc-200 font-mono focus:outline-none focus:border-amber-500/50 leading-relaxed"
+                  placeholder="Record your commercial insights, cash flow logic, code architecture, or questions for your on-site lab mentor..."
+                  className="w-full p-4 rounded-xl bg-[#fbf9f1] border border-[#0d1210]/15 text-xs text-[#0d1210] font-mono focus:outline-none focus:border-[#ffcd00] leading-relaxed"
                 />
-                <p className="text-[11px] text-zinc-500">
-                  Notes are stored continuously and accessible from your Mboa Academy student dashboard.
+                <p className="text-[11px] text-[#5f6c65]">
+                  Notes auto-save continuously to your HCIL Student Studio and can be exported anytime.
                 </p>
               </div>
             )}
 
-            {/* TAB CONTENT: AI Lecture Summary */}
+            {/* TAB: Executive Summary */}
             {activeTab === "summary" && (
-              <div className="mercor-card p-6 rounded-2xl border border-white/10 space-y-4">
+              <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-4 shadow-sm">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <h3 className="text-sm font-bold text-white">
-                    Executive Summary & Takeaways (AI Generated)
+                  <Sparkles className="w-4 h-4 text-[#059669]" />
+                  <h3 className="text-sm font-bold text-[#0d1210]">
+                    Executive Lesson Summary & Economic Principles
                   </h3>
                 </div>
 
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  {currentLesson?.summary}
+                <p className="text-xs text-[#4d5953] leading-relaxed">
+                  {currentLesson?.content || currentLesson?.summary}
                 </p>
 
-                <div className="space-y-2 pt-2 border-t border-white/5">
-                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                    Key Architectural Takeaways:
+                <div className="space-y-2 pt-2 border-t border-[#0d1210]/10">
+                  <h4 className="text-xs font-bold text-[#071f15] uppercase tracking-wider">
+                    Core Wealth & Capability Takeaways:
                   </h4>
-                  <ul className="text-xs text-zinc-400 space-y-1.5 list-disc list-inside">
-                    <li>Maintain minimal JavaScript payload on initial render for faster First Contentful Paint.</li>
-                    <li>Utilize PostgreSQL indexes for relational foreign keys to avoid full table scans.</li>
-                    <li>Ensure environment credentials are kept safe in server-only modules.</li>
+                  <ul className="text-xs text-[#4d5953] space-y-1.5 list-disc list-inside">
+                    <li>Differentiate cash-flow producing assets from depreciating consumer liabilities.</li>
+                    <li>Always define project scope around client measurable business outcomes.</li>
+                    <li>Retain equity and intellectual property ownership whenever architecting systems.</li>
                   </ul>
                 </div>
               </div>
             )}
 
-            {/* TAB CONTENT: Assignments */}
+            {/* TAB: Deliverable Task */}
             {activeTab === "assignments" && (
-              <div className="mercor-card p-6 rounded-2xl border border-white/10 space-y-5">
+              <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-5 shadow-sm">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">
-                    Required Capstone Task
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#ffcd00]/30 text-[#0d1210]">
+                    Verified Proof-of-Work
                   </span>
-                  <h3 className="text-base font-bold text-white mt-1">
-                    Task: Implement and Deploy the Module Architecture
+                  <h3 className="text-base font-bold text-[#0d1210] mt-1">
+                    Task: Build & Document the Deliverable Solution
                   </h3>
-                  <p className="text-xs text-zinc-300 mt-2 leading-relaxed">
-                    Clone the starter template, configure the schema with Prisma, connect to a PostgreSQL database, and submit your public GitHub repository URL and Vercel preview link below.
+                  <p className="text-xs text-[#4d5953] mt-1 leading-relaxed">
+                    Execute the practical exercise, calculate the unit economics, and provide a verifiable link to your live code repository or business document.
                   </p>
                 </div>
 
                 {submissionStatus === "GRADED" ? (
-                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
-                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+                  <div className="p-4 rounded-xl bg-[#059669]/10 border border-[#059669]/30 space-y-2">
+                    <div className="flex items-center gap-2 text-[#059669] font-bold text-xs">
                       <CheckCircle className="w-4 h-4" />
-                      <span>Assignment Successfully Submitted & Graded!</span>
+                      <span>Deliverable Approved & Capability Verified!</span>
                     </div>
-                    <p className="text-xs text-zinc-300">
-                      Score: <strong className="text-emerald-400">95 / 100</strong> (A+)
+                    <p className="text-xs text-[#0d1210]">
+                      Score: <strong className="text-[#059669]">96 / 100</strong> (Added to HCIL Passport)
                     </p>
-                    <p className="text-[11px] text-zinc-400 italic">
-                      &quot;Excellent relational schema design and clean server component boundaries. Ready for module 2!&quot; &mdash; Academy Reviewer
+                    <p className="text-[11px] text-[#4d5953] italic">
+                      &quot;Excellent cash flow analysis and clean data model. Ready for client test deployment!&quot; &mdash; HCIL Evaluator
                     </p>
                   </div>
                 ) : (
                   <form onSubmit={handleAssignmentSubmit} className="space-y-4 pt-2">
                     <div>
-                      <label className="text-[11px] font-semibold text-zinc-300">
-                        GitHub Repository URL
+                      <label className="text-[11px] font-bold text-[#0d1210]">
+                        Project or Deliverable URL (GitHub / Live Link / Google Doc)
                       </label>
                       <input
                         required
                         type="url"
-                        placeholder="https://github.com/your-username/mboa-capstone-project"
-                        value={githubUrl}
-                        onChange={(e) => setGithubUrl(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-white focus:outline-none focus:border-amber-500"
+                        placeholder="https://github.com/your-name/hcil-capstone-deliverable"
+                        value={deliverableUrl}
+                        onChange={(e) => setDeliverableUrl(e.target.value)}
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl bg-[#fbf9f1] border border-[#0d1210]/15 text-xs text-[#0d1210] focus:outline-none focus:border-[#ffcd00]"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-semibold text-zinc-300">
-                        Implementation Notes / Architecture Highlights
+                      <label className="text-[11px] font-bold text-[#0d1210]">
+                        Execution Summary & Commercial Value Created
                       </label>
                       <textarea
                         rows={3}
-                        placeholder="Explain challenges overcome, database indexing choices, or questions for your lab instructor..."
-                        value={submissionText}
-                        onChange={(e) => setSubmissionText(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-white focus:outline-none focus:border-amber-500"
+                        placeholder="Describe the problem solved, pricing rationale, and client outcome..."
+                        value={submissionNotes}
+                        onChange={(e) => setSubmissionNotes(e.target.value)}
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl bg-[#fbf9f1] border border-[#0d1210]/15 text-xs text-[#0d1210] focus:outline-none focus:border-[#ffcd00]"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={submissionStatus === "SUBMITTING"}
-                      className="gold-btn px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2"
+                      className="btn-dark px-6 py-2.5 rounded-full text-xs font-bold flex items-center gap-2"
                     >
                       {submissionStatus === "SUBMITTING" ? (
                         <>
-                          <span className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                          <span>Submitting Solution...</span>
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>Submitting for HCIL Assessment...</span>
                         </>
                       ) : (
                         <>
                           <Upload className="w-3.5 h-3.5" />
-                          <span>Submit Solution for Mentor Review</span>
+                          <span>Submit Deliverable for Proof-of-Work Verification</span>
                         </>
                       )}
                     </button>
@@ -411,41 +449,35 @@ export default function LMSClassroomPage({
               </div>
             )}
 
-            {/* TAB CONTENT: Ask AI Tutor */}
+            {/* TAB: Ask AI Financial Tutor */}
             {activeTab === "ai" && (
-              <div className="mercor-card p-6 rounded-2xl border border-white/10 space-y-4">
+              <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-4 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Bot className="w-4 h-4 text-amber-400" />
-                    <h3 className="text-sm font-bold text-white">AI Lecture Assistant</h3>
+                    <Bot className="w-4 h-4 text-[#059669]" />
+                    <h3 className="text-sm font-bold text-[#0d1210]">AI Financial & Skill Tutor</h3>
                   </div>
-                  <span className="text-[10px] text-zinc-400">Grounded on lesson context</span>
+                  <span className="text-[10px] text-[#5f6c65] font-semibold">Grounded on lesson context</span>
                 </div>
 
                 {/* Quick Prompts */}
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button
-                    onClick={() => handleSendMessage("Explain this lesson simply in 3 bullet points")}
-                    className="px-2.5 py-1 rounded-lg text-[11px] bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10"
+                    onClick={() => handleSendMessage("How do I calculate unit margins for this service?")}
+                    className="px-3 py-1 rounded-full text-[11px] bg-[#fbf9f1] hover:bg-[#ffcd00]/20 text-[#0d1210] border border-[#0d1210]/10 font-medium"
                   >
-                    💡 Summarize simply
+                    💰 Calculate unit margins
                   </button>
                   <button
-                    onClick={() => handleSendMessage("Give me a practical code example for this lesson")}
-                    className="px-2.5 py-1 rounded-lg text-[11px] bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10"
+                    onClick={() => handleSendMessage("Give me a simulation test question for cash flow")}
+                    className="px-3 py-1 rounded-full text-[11px] bg-[#fbf9f1] hover:bg-[#ffcd00]/20 text-[#0d1210] border border-[#0d1210]/10 font-medium"
                   >
-                    💻 Code snippet
-                  </button>
-                  <button
-                    onClick={() => handleSendMessage("Generate a quiz for this topic")}
-                    className="px-2.5 py-1 rounded-lg text-[11px] bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10"
-                  >
-                    📝 Test my knowledge
+                    📊 Run cash flow simulation
                   </button>
                 </div>
 
                 {/* Chat Log */}
-                <div className="h-64 overflow-y-auto space-y-3 p-3 rounded-xl bg-black/40 border border-white/5 text-xs">
+                <div className="h-64 overflow-y-auto space-y-3 p-3 rounded-2xl bg-[#fbf9f1] border border-[#0d1210]/10 text-xs">
                   {chatMessages.map((msg, mIdx) => (
                     <div
                       key={mIdx}
@@ -454,10 +486,10 @@ export default function LMSClassroomPage({
                       }`}
                     >
                       <div
-                        className={`max-w-[85%] p-3 rounded-xl leading-relaxed whitespace-pre-wrap ${
+                        className={`max-w-[85%] p-3 rounded-2xl leading-relaxed whitespace-pre-wrap ${
                           msg.sender === "user"
-                            ? "bg-amber-500 text-black font-medium"
-                            : "bg-white/10 text-zinc-200 border border-white/5"
+                            ? "bg-[#071f15] text-white font-medium"
+                            : "bg-white text-[#0d1210] border border-[#0d1210]/10 shadow-sm"
                         }`}
                       >
                         {msg.text}
@@ -465,26 +497,26 @@ export default function LMSClassroomPage({
                     </div>
                   ))}
                   {isAILoading && (
-                    <div className="text-[11px] text-zinc-400 flex items-center gap-1.5 animate-pulse">
-                      <Bot className="w-3.5 h-3.5 text-amber-400" />
-                      <span>AI is thinking...</span>
+                    <div className="text-[11px] text-[#5f6c65] flex items-center gap-1.5 animate-pulse">
+                      <Bot className="w-3.5 h-3.5 text-[#059669]" />
+                      <span>AI is calculating...</span>
                     </div>
                   )}
                 </div>
 
-                {/* Input Bar */}
+                {/* Chat Input */}
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Ask a question about this lecture..."
+                    placeholder="Ask a question about this lesson or cash flow model..."
                     value={inputQuestion}
                     onChange={(e) => setInputQuestion(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                    className="flex-1 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="flex-1 px-3 py-2 rounded-full bg-[#fbf9f1] border border-[#0d1210]/15 text-xs text-[#0d1210] focus:outline-none focus:border-[#ffcd00]"
                   />
                   <button
                     onClick={() => handleSendMessage()}
-                    className="gold-btn px-4 py-2 rounded-lg text-xs font-bold"
+                    className="btn-dark px-4 py-2 rounded-full text-xs font-bold"
                   >
                     <Send className="w-3.5 h-3.5" />
                   </button>
@@ -496,13 +528,13 @@ export default function LMSClassroomPage({
 
         </div>
 
-        {/* Right Sidebar: Curriculum Drawer */}
-        <aside className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-white/10 bg-[#090a0f] p-4 sm:p-6 overflow-y-auto space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-white/10">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              Course Syllabus
+        {/* Right Sidebar: Syllabus Drawer */}
+        <aside className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-[#0d1210]/10 bg-white p-4 sm:p-6 overflow-y-auto space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[#0d1210]/10">
+            <h3 className="text-xs font-bold text-[#0d1210] uppercase tracking-wider">
+              Program Modules
             </h3>
-            <span className="text-[10px] text-zinc-400">
+            <span className="text-[10px] text-[#5f6c65] font-semibold">
               {course.modules.length} Modules
             </span>
           </div>
@@ -510,7 +542,7 @@ export default function LMSClassroomPage({
           <div className="space-y-4">
             {course.modules.map((mod, mIdx) => (
               <div key={mod.id} className="space-y-2">
-                <h4 className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide">
+                <h4 className="text-[11px] font-bold text-[#5f6c65] uppercase tracking-wide">
                   Module {mIdx + 1}: {mod.title}
                 </h4>
 
@@ -523,19 +555,19 @@ export default function LMSClassroomPage({
                         href={`/lms/learn/${courseSlug}/${lesson.slug}`}
                         className={`p-2.5 rounded-xl text-xs flex items-center justify-between transition-all ${
                           isCurrent
-                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/40 font-semibold"
-                            : "text-zinc-400 hover:text-white hover:bg-white/5"
+                            ? "bg-[#ffcd00]/30 text-[#0d1210] border border-[#ffcd00] font-bold"
+                            : "text-[#4d5953] hover:text-[#0d1210] hover:bg-[#fbf9f1]"
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
                           {isCurrent ? (
-                            <Play className="w-3.5 h-3.5 text-amber-400 shrink-0 fill-amber-400" />
+                            <Play className="w-3.5 h-3.5 text-[#0d1210] shrink-0 fill-current" />
                           ) : (
-                            <CheckCircle className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
+                            <CheckCircle className="w-3.5 h-3.5 text-[#b0bbb5] shrink-0" />
                           )}
                           <span className="truncate">{lesson.title}</span>
                         </div>
-                        <span className="text-[10px] text-zinc-500 shrink-0">
+                        <span className="text-[10px] text-[#5f6c65] shrink-0">
                           {lesson.durationMinutes}m
                         </span>
                       </Link>
