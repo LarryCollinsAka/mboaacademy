@@ -34,3 +34,23 @@ Every server action and API endpoint must independently verify the authenticated
 ## Important next implementation step
 
 Implement Auth.js and server-side role guards before exposing role-specific dashboard data. Then replace the current demonstration-only student dashboard with queries scoped to the authenticated student. Build instructor and administrator dashboards on the same authenticated session and enforce permissions in the server layer.
+
+## First-party authentication implementation (current patch)
+
+- `/login` uses server-side password verification with Node's built-in scrypt and a random, opaque, HttpOnly session cookie. Session tokens are persisted in the existing `Session` table; no new database migration is required for this implementation.
+- `/lms/dashboard`, `/lms/instructor/dashboard`, `/lms/admin/dashboard`, and `/lms/admin/courses` check the current user and role on the server. The browser cannot grant itself a role.
+- Public account registration is intentionally disabled. Provision the first admin explicitly from a trusted local shell after configuring `DATABASE_URL`:
+
+  PowerShell example (do not commit these values):
+
+  ```powershell
+  $env:ADMIN_EMAIL = "admin@example.com"
+  $env:ADMIN_PASSWORD = "use-a-unique-password-at-least-14-characters"
+  npm run admin:create
+  Remove-Item Env:ADMIN_EMAIL
+  Remove-Item Env:ADMIN_PASSWORD
+  ```
+
+- The script refuses to modify an existing account. Do not expose these environment variables in Vercel build logs or commit them to source control.
+- The course administration screen creates unpublished course drafts and allows an administrator to publish/unpublish them. It does not create cohorts automatically. Cohorts remain distinct scheduled runs with their own dates, time zone, learning mode, capacity, and trainer assignments. Cohort scheduling UI is the next implementation step.
+- This patch has not been validated with a production build in this environment. Run `npm run build` locally and test with a non-production database before deploying. The sign-in system should receive security review and rate limiting before broad public exposure.

@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CourseWithDetails } from "@/lib/courses-service";
 import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
-import { Search, BookOpen, Clock, Star, MapPin, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
+import { Search, BookOpen, Clock, MapPin, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 
 export function CoursesPage() {
   const { t } = useI18n();
@@ -191,17 +191,25 @@ export function CoursesPage() {
                     <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#0d1210]/10 text-xs text-[#5f6c65]">
                       <div className="flex items-center gap-1.5 font-medium">
                         <Clock className="w-3.5 h-3.5 text-[#059669]" />
-                        <span>{course.durationWeeks} Weeks Cohort</span>
+                        <span>{course.durationLabel}</span>
                       </div>
                       <div className="flex items-center gap-1.5 font-medium">
-                        <Star className="w-3.5 h-3.5 text-[#ffcd00] fill-[#ffcd00]" />
-                        <span>{course.rating} Rating</span>
+                        <BookOpen className="w-3.5 h-3.5 text-[#059669]" />
+                        <span>{course.studentsCount} enrolled</span>
                       </div>
                     </div>
 
-                    <div className="text-[11px] text-[#5f6c65] flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#059669] shrink-0" />
-                      <span>Douala (Akwa) &bull; Yaounde (Bastos) &bull; Online</span>
+                    <div className="text-[11px] text-[#5f6c65] flex items-start gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#059669] shrink-0 mt-0.5" />
+                      {course.cohorts.length > 0 ? (
+                        <div className="space-y-1">
+                          <p className="font-semibold text-[#0d1210]">Next cohort: {new Date(course.cohorts[0].startsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: course.cohorts[0].timezone })} – {new Date(course.cohorts[0].endsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: course.cohorts[0].timezone })}</p>
+                          <p>{course.cohorts[0].name} · {course.cohorts[0].timezone}</p>
+                          <p>Trainer(s): {course.cohorts[0].trainers.map((trainer) => trainer.name).join(", ") || "To be assigned"}</p>
+                        </div>
+                      ) : (
+                        <span>Upcoming cohort dates and trainers to be announced</span>
+                      )}
                     </div>
 
                   </div>

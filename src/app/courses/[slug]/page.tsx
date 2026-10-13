@@ -8,7 +8,7 @@ import { PaymentModal } from "@/components/checkout/PaymentModal";
 import Link from "next/link";
 import {
   Clock,
-  Star,
+  Users,
   MapPin,
   CheckCircle2,
   PlayCircle,
@@ -111,8 +111,8 @@ export default function CourseDetailPage({
                 {course.mode} Learning Mode
               </span>
               <span className="text-xs text-[#5f6c65] font-semibold">
-                <Star className="w-3.5 h-3.5 text-[#ffcd00] fill-[#ffcd00] inline mr-1" />
-                {course.rating} &bull; {course.studentsCount} Active Learners
+                <Users className="w-3.5 h-3.5 text-[#059669] inline mr-1" />
+                {course.studentsCount} Enrolled Learners
               </span>
             </div>
           </div>
@@ -133,6 +133,24 @@ export default function CourseDetailPage({
                   {course.description}
                 </p>
               </div>
+
+              <section className="rounded-2xl border border-[#0d1210]/10 bg-white p-5 space-y-3">
+                <h2 className="text-sm font-black text-[#0d1210]">Cohort schedule & trainers</h2>
+                {course.cohorts.length ? course.cohorts.map((cohort) => (
+                  <div key={cohort.id} className="rounded-xl bg-[#fbf9f1] p-4 space-y-1.5 text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <strong>{cohort.name}</strong>
+                      <span className="rounded-full bg-[#059669]/10 px-2 py-1 text-[#059669] font-bold">{cohort.status.replaceAll("_", " ")}</span>
+                    </div>
+                    <p>{new Date(cohort.startsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: cohort.timezone })} – {new Date(cohort.endsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: cohort.timezone })} ({cohort.durationLabel})</p>
+                    <p>Mode: {cohort.mode} · Time zone: {cohort.timezone}</p>
+                    <p>Trainer(s): {cohort.trainers.map((trainer) => trainer.name).join(", ") || "To be assigned"}</p>
+                    {cohort.weeklyLearningHours !== null && <p>Expected learning time: {cohort.weeklyLearningHours} hours/week</p>}
+                  </div>
+                )) : (
+                  <p className="text-xs text-[#5f6c65]">The curriculum is available for review. Cohort dates, trainer assignments, and registration windows will appear here once scheduled.</p>
+                )}
+              </section>
 
               {/* Skills and Competencies */}
               <div className="space-y-3">
@@ -223,7 +241,7 @@ export default function CourseDetailPage({
               <div className="space-y-2.5 pt-4 border-t border-[#0d1210]/10 text-xs text-[#2b332f] font-medium">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>{course.durationWeeks} weeks practical progression</span>
+                  <span>{course.durationLabel} · {course.durationHours} learning hours</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
