@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { SEED_COURSES } from "../../prisma/seed";
 
 export interface CourseWithDetails {
   id: string;
@@ -13,8 +12,23 @@ export interface CourseWithDetails {
   priceUSD: number;
   priceXAF: number;
   durationWeeks: number;
+  durationHours: number;
+  durationLabel: string;
+  cohorts: Array<{
+    id: string;
+    name: string;
+    code: string;
+    startsAt: string;
+    endsAt: string;
+    timezone: string;
+    mode: "HYBRID" | "ONSITE" | "ONLINE";
+    status: string;
+    durationLabel: string;
+    weeklyLearningHours: number | null;
+    trainers: Array<{ id: string; name: string }>;
+  }>;
   skills: string[];
-  rating: number;
+  rating: number | null;
   studentsCount: number;
   badge?: string;
   modules: Array<{
@@ -34,92 +48,93 @@ export interface CourseWithDetails {
   }>;
 }
 
+function formatCalendarDuration(start: Date, end: Date): string {
+  const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86_400_000));
+  if (days >= 60) {
+    const months = Math.round(days / 30.4375);
+    return `${months} ${months === 1 ? "month" : "months"}`;
+  }
+  if (days >= 14) {
+    const weeks = Math.round(days / 7);
+    return `${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+  }
+  return `${days} ${days === 1 ? "day" : "days"}`;
+}
+
 export async function getCoursesFromDb(): Promise<CourseWithDetails[]> {
-  try {
-    const courses = await db.course.findMany({
-      where: { published: true },
-      include: {
-        modules: {
-          orderBy: { order: "asc" },
-          include: {
-            lessons: {
-              orderBy: { order: "asc" },
-            },
-          },
+  const courses = await db.course.findMany({
+    where: { published: true },
+    include: {
+      cohorts: {
+        where: { status: { in: ["PLANNED", "ENROLLING", "IN_PROGRESS"] } },
+        orderBy: { startsAt: "asc" },
+        include: {
+          trainers: { select: { id: true, name: true } },
         },
       },
-      orderBy: { createdAt: "desc" },
-    });
+      modules: {
+        orderBy: { order: "asc" },
+        include: { lessons: { orderBy: { order: "asc" } } },
+      },
+      _count: { select: { enrollments: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
-    if (courses && courses.length > 0) {
-      return courses.map((c) => ({
-        id: c.id,
-        title: c.title,
-        slug: c.slug,
-        headline: c.headline,
-        description: c.description,
-        category: c.skills[0] || "Financial Intelligence & Skills",
-        level: c.level,
-        mode: c.mode as "HYBRID" | "ONSITE" | "ONLINE",
-        priceUSD: c.price,
-        priceXAF: Math.round(c.price * 600), // Standard XAF conversion
-        durationWeeks: Math.round(c.durationHours / 7) || 8,
-        skills: c.skills,
-        rating: 4.95,
-        studentsCount: 320,
-        badge: c.slug === "from-skill-to-enterprise" ? "Flagship Program" : undefined,
-        modules: c.modules.map((m) => ({
-          id: m.id,
-          title: m.title,
-          order: m.order,
-          lessons: m.lessons.map((l) => ({
-            id: l.id,
-            title: l.title,
-            slug: l.slug,
-            durationMinutes: l.durationMinutes,
-            isFreePreview: l.isFreePreview,
-            summary: l.content?.slice(0, 140) || "",
-            content: l.content,
-            notesDefault: `Key takeaways from ${l.title}:\n\n- How this creates commercial value:\n- Cash flow implications:\n- Actionable steps:`,
-          })),
-        })),
-      }));
-    }
-  } catch (error) {
-    console.warn("[Database] Could not fetch courses directly from Postgres, falling back to seed schema:", error);
-  }
-
-  // Graceful fallback to seeded courses structure
-  return SEED_COURSES.map((c, index) => ({
-    id: `seed-${index + 1}`,
-    title: c.title,
-    slug: c.slug,
-    headline: c.headline,
-    description: c.description,
-    category: c.category,
-    level: c.level,
-    mode: c.mode as "HYBRID" | "ONSITE" | "ONLINE",
-    priceUSD: c.priceUSD,
-    priceXAF: Math.round(c.priceUSD * 600),
-    durationWeeks: 10,
-    skills: c.skills,
-    rating: 4.96,
-    studentsCount: 340,
-    badge: c.slug === "from-skill-to-enterprise" ? "Flagship Program" : undefined,
-    modules: c.modules.map((m, mIdx) => ({
-      id: `mod-${mIdx + 1}`,
-      title: m.title,
-      order: m.order,
-      lessons: m.lessons.map((l, lIdx) => ({
-        id: `les-${mIdx + 1}-${lIdx + 1}`,
-        title: l.title,
-        slug: l.slug,
-        durationMinutes: l.durationMinutes,
-        isFreePreview: l.isFreePreview,
-        summary: l.content.slice(0, 140),
-        content: l.content,
-        notesDefault: `Core lessons from ${l.title}:\n\n1. Commercial value created:\n2. Cash flow mechanics:\n3. Actionable next steps:`,
+  return courses.map((course) => {
+    const cohorts = course.cohorts.map((cohort) => ({
+      id: cohort.id,
+      name: cohort.name,
+      code: cohort.code,
+      startsAt: cohort.startsAt.toISOString(),
+      endsAt: cohort.endsAt.toISOString(),
+      timezone: cohort.timezone,
+      mode: cohort.mode as "HYBRID" | "ONSITE" | "ONLINE",
+      status: cohort.status,
+      durationLabel: formatCalendarDuration(cohort.startsAt, cohort.endsAt),
+      weeklyLearningHours: cohort.weeklyLearningHours,
+      trainers: cohort.trainers.map((trainer) => ({
+        id: trainer.id,
+        name: trainer.name?.trim() || "Trainer profile pending",
       })),
-    })),
-  }));
+    }));
+
+    const firstCohort = cohorts[0];
+    const courseDurationHours = course.durationHours;
+    return {
+      id: course.id,
+      title: course.title,
+      slug: course.slug,
+      headline: course.headline,
+      description: course.description,
+      category: course.category,
+      level: course.level,
+      mode: (firstCohort?.mode || course.mode) as "HYBRID" | "ONSITE" | "ONLINE",
+      priceUSD: course.price,
+      priceXAF: Math.round(course.price * 600),
+      durationWeeks: firstCohort ? Math.max(1, Math.round((new Date(firstCohort.endsAt).getTime() - new Date(firstCohort.startsAt).getTime()) / (7 * 86_400_000))) : 0,
+      durationHours: courseDurationHours,
+      durationLabel: firstCohort ? firstCohort.durationLabel : `${courseDurationHours} learning hours · dates to be announced`,
+      cohorts,
+      skills: course.skills,
+      rating: null,
+      studentsCount: course._count.enrollments,
+      badge: course.slug === "from-skill-to-enterprise" ? "Flagship Program" : undefined,
+      modules: course.modules.map((module) => ({
+        id: module.id,
+        title: module.title,
+        order: module.order,
+        lessons: module.lessons.map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          slug: lesson.slug,
+          durationMinutes: lesson.durationMinutes,
+          isFreePreview: lesson.isFreePreview,
+          summary: lesson.content?.slice(0, 140) || "",
+          content: lesson.content,
+          notesDefault: `Key takeaways from ${lesson.title}:\n\n- Capability demonstrated:\n- Evidence to submit:\n- Practical application:`,
+        })),
+      })),
+    };
+  });
 }

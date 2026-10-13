@@ -2,8 +2,15 @@
 
 import Link from "next/link";
 import { MapPin, Globe, ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function Footer() {
+  const [year, setYear] = useState(2026);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="bg-[#071f15] text-[#9ca7a1] pt-16 pb-12 text-xs border-t border-white/5 relative">
       {/* Top subtle Cameroon Flag tricolor line */}
@@ -122,7 +129,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-300 gap-4">
-          <p>© {new Date().getFullYear()} HCIL Academy. Learn. Build. Earn. Own. All rights reserved.</p>
+          <p>© {year} HCIL Academy. Learn. Build. Earn. Own. All rights reserved.</p>
           <div className="flex items-center gap-2">
             <span>🇨🇲 Founded in Cameroon &bull; Built for Global Economic Agency</span>
           </div>

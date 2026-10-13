@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --cream-bg: #fbf9f1;
+    --cream-surface: #ffffff;
+    --cream-muted: #f4efe1;
+    
+    /* Cameroon Flag Colors */
+    --gold-primary: #ffcd00;
+    --gold-hover: #e6b800;
+    --gold-light: #fff7cc;
+    
+    --forest-green: #071f15;
+    --forest-green-light: #0d3827;
+    --cameroon-green: #059669;
+
+    --cameroon-red: #dc2626;
+
+    --dark-text: #0d1210;
+    --dark-body: #34403b;
+    --border-subtle: rgba(13, 18, 16, 0.08);
+  }
+}
+
+body {
+  background-color: var(--cream-bg);
+  color: var(--dark-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f4efe1;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4ccb8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ffcd00;
+}
+
+/* Reference Image Component Styles */
+.cream-card {
+  background: #ffffff;
+  border: 1px solid rgba(13, 18, 16, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(13, 18, 16, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cream-card:hover {
+  border-color: rgba(255, 205, 0, 0.7);
+  box-shadow: 0 10px 25px -4px rgba(13, 18, 16, 0.06);
+}
+
+.dark-section-card {
+  background: #0b261b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Button Variants */
+.btn-gold {
+  background-color: #ffcd00;
+  color: #0d1210;
+  font-weight: 700;
+  transition: all 0.15s ease-in-out;
+}
+.btn-gold:hover {
+  background-color: #f0c000;
+  transform: translateY(-1px);
+}
+
+.btn-dark {
+  background-color: #0d1210;
+  color: #ffffff;
+  font-weight: 600;
+  transition: all 0.15s ease-in-out;
+}
+.btn-dark:hover {
+  background-color: #1e2622;
+  transform: translateY(-1px);
+}
+
+/* Cameroon Flag Accent Bar */
+.cameroon-flag-stripe {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    #007a3d 0%,
+    #007a3d 33.33%,
+    #ce1126 33.33%,
+    #ce1126 66.66%,
+    #fcd116 66.66%,
+    #fcd116 100%
+  );
+}

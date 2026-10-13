@@ -10,6 +10,7 @@ generator client {
 enum Role {
   STUDENT
   INSTRUCTOR
+  TRAINER
   ADMIN
 }
 
@@ -17,6 +18,14 @@ enum LearningMode {
   HYBRID
   ONSITE
   ONLINE
+}
+
+enum CohortStatus {
+  PLANNED
+  ENROLLING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
 
 enum EnrollmentStatus {
@@ -39,10 +48,13 @@ enum PaymentStatus {
 
 model User {
   id            String         @id @default(cuid())
-  email         String         @unique
+  email         String?        @unique
+  emailVerified DateTime?
   name          String?
+  passwordHash  String?
   role          Role           @default(STUDENT)
   avatar        String?
+  image         String?
   bio           String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -51,6 +63,9 @@ model User {
   notes         StudentNote[]
   submissions   Submission[]
   coursesTaught Course[]       @relation("InstructorCourses")
+  cohortsTaught Cohort[]        @relation("CohortTrainers")
+  accounts      Account[]
+  sessions      Session[]
   payments      Payment[]
 }
 
@@ -60,6 +75,7 @@ model Course {
   slug            String         @unique
   headline        String
   description     String
+  category        String         @default("Value-Creating Skills")
   level           String         @default("All Levels") // Beginner, Intermediate, Advanced
   mode            LearningMode   @default(HYBRID)
   price           Float          @default(0.0)
@@ -74,11 +90,37 @@ model Course {
   
   modules         Module[]
   enrollments     Enrollment[]
+  cohorts         Cohort[]
   assignments     Assignment[]
   payments        Payment[]
 
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+}
+
+model Cohort {
+  id                    String       @id @default(cuid())
+  courseId              String
+  course                Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  name                  String
+  code                  String       @unique
+  startsAt              DateTime
+  endsAt                DateTime
+  timezone              String       @default("Africa/Douala")
+  mode                  LearningMode
+  status                CohortStatus @default(PLANNED)
+  enrollmentOpensAt     DateTime?
+  enrollmentClosesAt    DateTime?
+  weeklyLearningHours   Float?
+  scheduleNotes         String?      @db.Text
+  capacity              Int?
+  trainers              User[]       @relation("CohortTrainers")
+  enrollments           Enrollment[]
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  @@index([courseId, startsAt, endsAt])
+  @@index([status, startsAt])
 }
 
 model Module {
@@ -163,6 +205,8 @@ model Enrollment {
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId    String
   course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  cohortId    String?
+  cohort      Cohort?          @relation(fields: [cohortId], references: [id], onDelete: SetNull)
   mode        LearningMode     @default(HYBRID)
   status      EnrollmentStatus @default(ACTIVE)
   progress    Int              @default(0) // Percentage 0 - 100
@@ -170,7 +214,8 @@ model Enrollment {
   enrolledAt  DateTime         @default(now())
   completedAt DateTime?
 
-  @@unique([userId, courseId])
+  @@unique([userId, courseId, cohortId])
+  @@index([cohortId, status])
 }
 
 model Payment {
@@ -244,3 +289,43 @@ model Translation {
   @@index([locale, namespace])
 }
 
+
+
+// Auth.js / NextAuth adapter models. Authentication providers and session handling
+// must still be configured in application code before protected routes are enabled.
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  oauth_token_secret String?
+  oauth_token       String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

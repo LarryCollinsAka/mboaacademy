@@ -1,9 +1,23 @@
+"use client";
+
 import Link from "next/link";
-import { COURSES_DATA } from "@/data/courses";
-import { ArrowRight, Clock, Star, Users, MapPin, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CourseWithDetails } from "@/lib/courses-service";
+import { ArrowRight, Clock, Users, MapPin, Sparkles } from "lucide-react";
 
 export function CoursesPreview() {
-  const featuredCourses = COURSES_DATA.slice(0, 3);
+  const [courses, setCourses] = useState<CourseWithDetails[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/courses")
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Course API unavailable")))
+      .then((data: { courses?: CourseWithDetails[] }) => setCourses(data.courses ?? []))
+      .catch((error) => console.error("Could not load featured courses", error))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const featuredCourses = courses.slice(0, 3);
 
   return (
     <section className="py-24 relative">
@@ -35,7 +49,11 @@ export function CoursesPreview() {
 
         {/* Courses Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredCourses.map((course) => (
+          {isLoading ? (
+            <p className="md:col-span-2 lg:col-span-3 py-10 text-center text-sm text-zinc-400">Loading programs from the HCIL database…</p>
+          ) : featuredCourses.length === 0 ? (
+            <p className="md:col-span-2 lg:col-span-3 py-10 text-center text-sm text-zinc-400">No published programs are available yet. Please check back soon.</p>
+          ) : featuredCourses.map((course) => (
             <div
               key={course.id}
               className="mercor-card rounded-2xl flex flex-col justify-between overflow-hidden group hover:border-amber-500/50 transition-all duration-300"
@@ -89,18 +107,18 @@ export function CoursesPreview() {
                 <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/5 text-xs text-zinc-400">
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-amber-400" />
-                    <span>{course.durationWeeks} Weeks Cohort</span>
+                    <span>{course.durationLabel}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                    <span>{course.rating} ({course.studentsCount} students)</span>
+                    <Users className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{course.studentsCount} enrolled</span>
                   </div>
                 </div>
 
                 {/* Campus footprint */}
                 <div className="text-[11px] text-zinc-400 flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span className="truncate">{course.campusLocations.join(" • ")}</span>
+                  <span className="truncate">{course.cohorts[0] ? `${course.cohorts[0].mode} · ${course.cohorts[0].timezone}` : "Cohort schedule to be announced"}</span>
                 </div>
 
               </div>
