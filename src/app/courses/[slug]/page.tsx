@@ -206,14 +206,12 @@ export default function CourseDetailPage({
                 </span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-black text-[#0d1210]">
-                    ${course.priceUSD}
+                    {course.currency === "XAF" ? `${course.priceXAF.toLocaleString()} XAF` : `$${course.priceUSD}`}
                   </span>
-                  <span className="text-sm text-[#5f6c65] font-semibold">
-                    / {course.priceXAF.toLocaleString()} XAF
-                  </span>
+                  {course.currency !== "XAF" && <span className="text-sm text-[#5f6c65] font-semibold">/ {course.priceXAF.toLocaleString()} XAF</span>}
                 </div>
                 <p className="text-xs text-[#059669] font-bold">
-                  Flexible installment plans & MTN/Orange Money accepted
+                  Payment options are confirmed during enrollment
                 </p>
               </div>
 
@@ -245,7 +243,7 @@ export default function CourseDetailPage({
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>Physical lab desk + 24/7 solar power</span>
+                  <span>Practical exercises and portfolio-focused learning</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />

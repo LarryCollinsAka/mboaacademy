@@ -81,6 +81,7 @@ model Course {
   price           Float          @default(0.0)
   currency        String         @default("USD")
   durationHours   Int            @default(40)
+  durationDays    Int?           // Nominal calendar duration; cohort dates remain authoritative for each run
   thumbnail       String?
   skills          String[]       // Graph node references (e.g. "React", "Next.js", "Docker")
   published       Boolean        @default(false)

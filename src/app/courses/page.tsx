@@ -218,10 +218,8 @@ export function CoursesPage() {
                   <div className="px-7 py-5 bg-[#fbf9f1] border-t border-[#0d1210]/10 flex items-center justify-between">
                     <div>
                       <div className="text-lg font-black text-[#0d1210] flex items-baseline gap-1">
-                        ${course.priceUSD}
-                        <span className="text-xs text-[#5f6c65] font-normal">
-                          / {course.priceXAF.toLocaleString()} XAF
-                        </span>
+                        {course.currency === "XAF" ? `${course.priceXAF.toLocaleString()} XAF` : `$${course.priceUSD}`}
+                        {course.currency !== "XAF" && <span className="text-xs text-[#5f6c65] font-normal">/ {course.priceXAF.toLocaleString()} XAF</span>}
                       </div>
                       <div className="text-[10px] text-[#059669] font-bold">Installment plans accepted</div>
                     </div>

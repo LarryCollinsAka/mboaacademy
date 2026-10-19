@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 
 type DashboardRole = "Student" | "Trainer" | "Administrator";
 
@@ -63,7 +62,6 @@ export function DashboardScaffold({ role }: { role: DashboardRole }) {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

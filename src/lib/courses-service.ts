@@ -11,6 +11,8 @@ export interface CourseWithDetails {
   mode: "HYBRID" | "ONSITE" | "ONLINE";
   priceUSD: number;
   priceXAF: number;
+  currency: string;
+  durationDays: number | null;
   durationWeeks: number;
   durationHours: number;
   durationLabel: string;
@@ -110,11 +112,13 @@ export async function getCoursesFromDb(): Promise<CourseWithDetails[]> {
       category: course.category,
       level: course.level,
       mode: (firstCohort?.mode || course.mode) as "HYBRID" | "ONSITE" | "ONLINE",
-      priceUSD: course.price,
-      priceXAF: Math.round(course.price * 600),
+      priceUSD: course.currency === "USD" ? course.price : 0,
+      priceXAF: course.currency === "XAF" ? course.price : Math.round(course.price * 600),
+      currency: course.currency,
+      durationDays: course.durationDays,
       durationWeeks: firstCohort ? Math.max(1, Math.round((new Date(firstCohort.endsAt).getTime() - new Date(firstCohort.startsAt).getTime()) / (7 * 86_400_000))) : 0,
       durationHours: courseDurationHours,
-      durationLabel: firstCohort ? firstCohort.durationLabel : `${courseDurationHours} learning hours · dates to be announced`,
+      durationLabel: firstCohort ? firstCohort.durationLabel : course.durationDays ? `${course.durationDays} ${course.durationDays === 1 ? "day" : "days"} · cohort dates to be announced` : `${courseDurationHours} learning hours · dates to be announced`,
       cohorts,
       skills: course.skills,
       rating: null,

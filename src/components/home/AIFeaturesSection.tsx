@@ -114,7 +114,7 @@ export function AIFeaturesSection() {
           </div>
 
           {/* Card 4: Business Economics Simulator [In Pilot] */}
-          <div className="dark-section-card p-6 rounded-2xl space-y-3 text-white bg-[#071f15] border border-white/10 flex flex-col justify-between">
+          <div className="cream-card p-6 rounded-2xl space-y-3 text-[#0d1210] flex flex-col justify-between">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="w-10 h-10 rounded-xl bg-[#ffcd00] flex items-center justify-center text-[#0d1210]">

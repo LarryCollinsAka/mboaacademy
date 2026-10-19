@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import {
   Sparkles,
   BookOpen,
@@ -318,7 +317,6 @@ export async function getCachedCourses(locale: string) {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

@@ -10,7 +10,8 @@
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "admin:create": "node scripts/create-admin.mjs"
+    "admin:create": "node scripts/create-admin.mjs",
+    "seed:initial-courses": "node scripts/seed-initial-courses.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
