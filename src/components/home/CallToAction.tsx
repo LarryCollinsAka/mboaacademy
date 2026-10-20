@@ -13,15 +13,15 @@ export function CallToAction() {
           {/* Golden Star Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold mb-6">
             <Star className="w-3.5 h-3.5 fill-current" />
-            Limited Physical Cohort Seats Available
+            Explore published learning paths
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight max-w-3xl mx-auto leading-tight">
-            Ready to Build Your Career in Modern <span className="gold-gradient-text">Software & AI</span>?
+            Build practical skills for roles that matter.
           </h2>
 
           <p className="mt-5 text-base sm:text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-            Join the next cohort starting next month at our Douala or Yaounde Innovation Hubs, or learn hybrid from anywhere. Gain real-world skills, mentorship, and guaranteed portfolio reviews.
+            Explore the published programs, check each cohort’s confirmed format and schedule, and practise role-relevant tasks with clear deliverables. Physical hubs and mentoring arrangements are only available when explicitly confirmed.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -29,7 +29,7 @@ export function CallToAction() {
               href="/courses"
               className="gold-btn w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold flex items-center justify-center gap-2"
             >
-              <span>Apply for Next Cohort</span>
+              <span>Explore Learning Paths</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -37,7 +37,7 @@ export function CallToAction() {
               href="/ai-advisor"
               className="w-full sm:w-auto px-7 py-4 rounded-xl text-base font-medium text-zinc-300 hover:text-white border border-white/10 hover:border-amber-500/40 transition-colors"
             >
-              Take 2-Min Career Quiz
+              Explore Role Guidance
             </Link>
           </div>
 
@@ -45,15 +45,15 @@ export function CallToAction() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-400">
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              100% Practical Capstones
+              Practical work samples
             </span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-amber-400" />
-              On-Site Solar Power & Fiber
+              Delivery details confirmed per cohort
             </span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              Flexible Payment Installments
+              Payment options shown before enrollment
             </span>
           </div>
 

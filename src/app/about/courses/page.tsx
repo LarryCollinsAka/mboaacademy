@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Search, BookOpen, Clock, MapPin, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 
 export function CoursesPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [courses, setCourses] = useState<CourseWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -19,7 +19,7 @@ export function CoursesPage() {
   useEffect(() => {
     async function loadCourses() {
       try {
-        const res = await fetch("/api/courses");
+        const res = await fetch(`/api/courses?locale=${encodeURIComponent(locale)}`, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           setCourses(data.courses || []);
@@ -31,9 +31,9 @@ export function CoursesPage() {
       }
     }
     loadCourses();
-  }, []);
+  }, [locale]);
 
-  const categories = ["All", "Entrepreneurship & Ownership", "Money Intelligence", "Value-Creating Skills", "Enterprise Lab"];
+  const categories = ["All", ...Array.from(new Set(courses.map((course) => course.category).filter(Boolean))).sort()];
   const modes = ["All", "HYBRID", "ONSITE", "ONLINE"];
 
   const filteredCourses = courses.filter((course) => {

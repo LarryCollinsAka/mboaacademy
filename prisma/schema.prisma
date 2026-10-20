@@ -133,6 +133,7 @@ model CourseTranslation {
 
   locale      String
   language    Language @relation(fields: [locale], references: [code], onDelete: Cascade)
+  skills String[] @default([])
 
   title       String
   headline    String

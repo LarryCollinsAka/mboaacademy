@@ -50,23 +50,37 @@ export interface CourseWithDetails {
   }>;
 }
 
-function formatCalendarDuration(start: Date, end: Date): string {
+function formatCalendarDuration(start: Date, end: Date, locale: string): string {
   const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86_400_000));
+  const french = locale === "fr";
   if (days >= 60) {
     const months = Math.round(days / 30.4375);
-    return `${months} ${months === 1 ? "month" : "months"}`;
+    return french ? `${months} ${months > 1 ? "mois" : "mois"}` : `${months} ${months === 1 ? "month" : "months"}`;
   }
   if (days >= 14) {
     const weeks = Math.round(days / 7);
-    return `${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+    return french ? `${weeks} ${weeks === 1 ? "semaine" : "semaines"}` : `${weeks} ${weeks === 1 ? "week" : "weeks"}`;
   }
-  return `${days} ${days === 1 ? "day" : "days"}`;
+  return french ? `${days} ${days === 1 ? "jour" : "jours"}` : `${days} ${days === 1 ? "day" : "days"}`;
 }
 
-export async function getCoursesFromDb(): Promise<CourseWithDetails[]> {
+function formatCourseDuration(days: number | null, hours: number, locale: string): string {
+  if (locale === "fr") {
+    return days
+      ? `${days} ${days === 1 ? "jour" : "jours"} · dates de promotion à confirmer`
+      : `${hours} heures d’apprentissage · dates à confirmer`;
+  }
+  return days
+    ? `${days} ${days === 1 ? "day" : "days"} · cohort dates to be announced`
+    : `${hours} learning hours · dates to be announced`;
+}
+
+export async function getCoursesFromDb(locale = "en"): Promise<CourseWithDetails[]> {
+  const normalizedLocale = locale.trim().toLowerCase().split("-")[0] === "fr" ? "fr" : "en";
   const courses = await db.course.findMany({
     where: { published: true },
     include: {
+      translations: { where: { locale: normalizedLocale }, take: 1 },
       cohorts: {
         where: { status: { in: ["PLANNED", "ENROLLING", "IN_PROGRESS"] } },
         orderBy: { startsAt: "asc" },
@@ -84,6 +98,7 @@ export async function getCoursesFromDb(): Promise<CourseWithDetails[]> {
   });
 
   return courses.map((course) => {
+    const translated = course.translations[0];
     const cohorts = course.cohorts.map((cohort) => ({
       id: cohort.id,
       name: cohort.name,
@@ -93,7 +108,7 @@ export async function getCoursesFromDb(): Promise<CourseWithDetails[]> {
       timezone: cohort.timezone,
       mode: cohort.mode as "HYBRID" | "ONSITE" | "ONLINE",
       status: cohort.status,
-      durationLabel: formatCalendarDuration(cohort.startsAt, cohort.endsAt),
+      durationLabel: formatCalendarDuration(cohort.startsAt, cohort.endsAt, normalizedLocale),
       weeklyLearningHours: cohort.weeklyLearningHours,
       trainers: cohort.trainers.map((trainer) => ({
         id: trainer.id,
@@ -105,11 +120,11 @@ export async function getCoursesFromDb(): Promise<CourseWithDetails[]> {
     const courseDurationHours = course.durationHours;
     return {
       id: course.id,
-      title: course.title,
+      title: translated?.title || course.title,
       slug: course.slug,
-      headline: course.headline,
-      description: course.description,
-      category: course.category,
+      headline: translated?.headline || course.headline,
+      description: translated?.description || course.description,
+      category: translated?.category || course.category,
       level: course.level,
       mode: (firstCohort?.mode || course.mode) as "HYBRID" | "ONSITE" | "ONLINE",
       priceUSD: course.currency === "USD" ? course.price : 0,
@@ -118,9 +133,9 @@ export async function getCoursesFromDb(): Promise<CourseWithDetails[]> {
       durationDays: course.durationDays,
       durationWeeks: firstCohort ? Math.max(1, Math.round((new Date(firstCohort.endsAt).getTime() - new Date(firstCohort.startsAt).getTime()) / (7 * 86_400_000))) : 0,
       durationHours: courseDurationHours,
-      durationLabel: firstCohort ? firstCohort.durationLabel : course.durationDays ? `${course.durationDays} ${course.durationDays === 1 ? "day" : "days"} · cohort dates to be announced` : `${courseDurationHours} learning hours · dates to be announced`,
+      durationLabel: firstCohort ? firstCohort.durationLabel : formatCourseDuration(course.durationDays, courseDurationHours, normalizedLocale),
       cohorts,
-      skills: course.skills,
+      skills: translated?.skills?.length ? translated.skills : course.skills,
       rating: null,
       studentsCount: course._count.enrollments,
       badge: course.slug === "from-skill-to-enterprise" ? "Flagship Program" : undefined,

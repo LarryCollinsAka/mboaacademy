@@ -17,8 +17,8 @@ export function FaqSection() {
       ),
     },
     {
-      q: "Why are you beginning with Customer Support and Executive Assistant (VA) tracks?",
-      a: "Customer experience and administrative operations are high-leverage skills that businesses urgently need. They have low entry barriers, clear deliverables, and immediate commercial demand—making them the ideal foundation for learners to prove capability and practice cash-flow management.",
+      q: t("faq.q5", "Why begin with customer support and administrative operations?"),
+      a: t("faq.a5", "These initial programs offer practical ways to build transferable communication, prioritisation, documentation, coordination, and problem-solving skills. They are a starting point, not a limit on the roles or value chains HCIL may support in the future."),
     },
     {
       q: t("faq.q2", "What makes this different from traditional online courses?"),
@@ -31,7 +31,7 @@ export function FaqSection() {
       q: t("faq.q3", "Are the physical innovation hubs in Douala and Yaoundé operating today?"),
       a: t(
         "faq.a3",
-        "Our live hybrid online cohorts and student studio are active today. Dedicated physical innovation lab facilities in Douala (Akwa) and Yaoundé (Bastos) are currently in their pilot planning rollout to ensure 24/7 solar power, gigabit fiber, and in-person peer pods."
+        "Online and hybrid delivery depends on the specific published cohort. Physical hubs in Douala and Yaoundé are planned initiatives, not currently guaranteed facilities."
       ),
     },
     {

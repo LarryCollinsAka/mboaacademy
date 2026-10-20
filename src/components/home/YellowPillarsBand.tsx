@@ -9,7 +9,7 @@ export function YellowPillarsBand() {
     {
       num: "01",
       title: t("pillar.1.title", "Financial Intelligence"),
-      outcome: "Understand money mechanics",
+      outcome: t("pillar.1.outcome", "See how work connects"),
       desc: t(
         "pillar.1.desc",
         "Master cash flow, net profit, operating overhead, and debt. Learn why money earned is not necessarily money retained, and distinguish productive assets from liabilities."
@@ -18,7 +18,7 @@ export function YellowPillarsBand() {
     {
       num: "02",
       title: t("pillar.2.title", "Value-Creating Skills"),
-      outcome: "Solve real business problems",
+      outcome: t("pillar.2.outcome", "Practise role tasks"),
       desc: t(
         "pillar.2.desc",
         "Develop verified capabilities in Customer Support, Executive & Virtual Assistance (VA), and operational workflows that businesses urgently pay to resolve."
@@ -27,7 +27,7 @@ export function YellowPillarsBand() {
     {
       num: "03",
       title: t("pillar.3.title", "Entrepreneurship & Business Basics"),
-      outcome: "Validate customer demand",
+      outcome: t("pillar.3.outcome", "Show evidence"),
       desc: t(
         "pillar.3.desc",
         "Identify real customer problems, price services by commercial value rather than hourly labor, and design service packages with clear unit margins."
@@ -36,7 +36,7 @@ export function YellowPillarsBand() {
     {
       num: "04",
       title: t("pillar.4.title", "Ownership & Asset Building"),
-      outcome: "Build systems that last",
+      outcome: t("pillar.4.outcome", "Grow responsibility"),
       desc: t(
         "pillar.4.desc",
         "Document standard operating procedures (SOPs), delegate tasks, and explore how a solo service can grow into a resilient, scalable operation that you own."
@@ -54,7 +54,7 @@ export function YellowPillarsBand() {
             <div key={idx} className={`${idx !== 0 ? "sm:pl-6 pt-6 sm:pt-0" : ""} space-y-2.5`}>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-black opacity-60">
-                  PILLAR {p.num}
+                  {t("pillar.label", "PILLAR")} {p.num}
                 </span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#0d1210]/10 text-[#0d1210]">
                   {p.outcome}

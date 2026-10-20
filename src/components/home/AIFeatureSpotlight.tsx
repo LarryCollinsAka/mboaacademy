@@ -5,26 +5,26 @@ export function AIFeatureSpotlight() {
   const capabilities = [
     {
       icon: Bot,
-      title: "Marketplace-Style AI Career Matcher",
-      description: "Answer a 2-minute diagnostic questionnaire about your goals, coding comfort, and career timeline. Our AI computes your optimal skill path.",
+      title: "Role & Learning-Path Guide",
+      description: "Answer a 2-minute diagnostic questionnaire about your goals, coding comfort, and career timeline. A guided questionnaire can help you explore possible learning paths; recommendations should be reviewed against your goals and circumstances.",
       tag: "For Prospective Students",
     },
     {
       icon: Network,
-      title: "FalkorDB Graph Skill Trees",
-      description: "Understand the true prerequisite dependencies of modern software engineering. We don't teach isolated tricks; we teach connected graph ontologies.",
+      title: "Capability Relationships (Planned)",
+      description: "Explore how skills relate to tasks and role requirements. Any capability map should be treated as guidance and reviewed against the actual role.",
       tag: "Powered by FalkorDB",
     },
     {
       icon: BrainCircuit,
-      title: "Qdrant Vector RAG Search",
-      description: "Ask questions naturally about any lecture, code snippet, or slide. Qdrant semantic search pulls the exact seconds of the lecture video or note.",
+      title: "Learning Resource Search (Where Enabled)",
+      description: "Ask questions naturally about any lecture, code snippet, or slide. Semantic search may help locate relevant notes or learning materials where the feature and source content are connected.",
       tag: "Powered by Qdrant",
     },
     {
       icon: BookOpen,
-      title: "AI Lesson Planning & Lecture Summaries",
-      description: "Instructors generate structured multi-module lesson blueprints instantly. Students get automated executive summaries and key bullet notes.",
+      title: "Lesson Planning & Learning Notes",
+      description: "Structured lesson plans and learning notes can help instructors and learners organise concepts, practice tasks, and takeaways.",
       tag: "For Students & Instructors",
     },
   ];
@@ -47,7 +47,7 @@ export function AIFeatureSpotlight() {
             An LMS Engineered with <span className="gold-gradient-text">Cognitive Intelligence</span>
           </h2>
           <p className="text-zinc-400 text-base leading-relaxed">
-            Mboa Academy combines <strong className="text-zinc-200">Qdrant Vector Databases</strong> and <strong className="text-zinc-200">FalkorDB Knowledge Graphs</strong> to personalize your education, answer questions in real-time, and guarantee skill mastery.
+            HCIL Academy is developing a learning experience that can combine <strong className="text-zinc-200">Qdrant Vector Databases</strong> and <strong className="text-zinc-200">FalkorDB Knowledge Graphs</strong> to support navigation, contextual learning, and practice. Tools and capabilities are introduced only where implemented; no system can guarantee mastery.
           </p>
         </div>
 
@@ -87,7 +87,7 @@ export function AIFeatureSpotlight() {
               Try the AI Course & Career Advisor
             </h4>
             <p className="text-sm text-zinc-400">
-              Not sure which track to choose? Let our AI match your career objectives to the right cohort in 60 seconds.
+              Not sure which track to choose? Use role guidance to explore options; confirm course content, availability, and fit before enrolling.
             </p>
           </div>
 

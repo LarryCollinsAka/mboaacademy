@@ -23,10 +23,10 @@ export default function AboutPage() {
               Mission & Assessment Standards
             </div>
             <h1 className="text-4xl sm:text-6xl font-black text-[#0d1210] tracking-tight">
-              Bridging the gap between knowledge, <span className="underline decoration-[#ffcd00] decoration-wavy">execution, and ownership</span>.
+              Connecting learning, <span className="underline decoration-[#ffcd00] decoration-wavy">practical work, and contribution</span> across value chains.
             </h1>
             <p className="text-[#4d5953] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              HCIL Academy was founded on an unapologetic belief: Education should do more than prepare people to seek employment. It should teach people how money works, how economic value is created, and how to build assets that last.
+              HCIL Academy is built around a practical idea: people should understand the work that needs to be done, develop the capabilities to contribute, and demonstrate what they can do. Financial literacy, independent work, and entrepreneurship can support that journey, but they do not define every learner’s goals.
             </p>
           </div>
 
@@ -37,10 +37,10 @@ export default function AboutPage() {
                 Our Core Philosophy
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-[#0d1210]">
-                All Paths Are Valid. Financial Intelligence Empowers All of Them.
+                Every Role Can Contribute to Value.
               </h2>
               <p className="text-xs sm:text-sm text-[#4d5953] leading-relaxed">
-                Schooling gives knowledge. Practice develops capability. Creating value opens opportunities. Financial intelligence helps you make deliberate decisions with the money you generate. Ownership gives you the opportunity to build something that endures.
+                Knowledge gives context. Practice builds capability. Clear evidence helps others understand what you can do. HCIL connects role-specific tasks to the customers, teams, processes, and outcomes they support. Financial literacy and ownership are useful supporting topics, not mandatory destinations.
               </p>
             </div>
 
@@ -48,21 +48,21 @@ export default function AboutPage() {
               <div className="p-5 rounded-2xl bg-[#fbf9f1] border border-[#0d1210]/5 space-y-2">
                 <span className="text-xs font-black text-[#0d1210] uppercase tracking-wider">Employment</span>
                 <p className="text-xs text-[#4d5953] leading-relaxed">
-                  A valid and valuable path. When you understand business cash flow and customer value, you become a high-impact contributor worthy of promotion.
+                  A valuable path. Learn the standards, tools, communication, and handoffs that help you contribute reliably within a team or organization.
                 </p>
               </div>
 
               <div className="p-5 rounded-2xl bg-[#fbf9f1] border border-[#0d1210]/5 space-y-2">
                 <span className="text-xs font-black text-[#0d1210] uppercase tracking-wider">Freelancing & Services</span>
                 <p className="text-xs text-[#4d5953] leading-relaxed">
-                  A powerful bridge. Learn to price by value, package deliverables clearly, control overhead, and retain net cash rather than selling raw hours.
+                  An option for people who want to offer services independently. Learn to define scope, communicate expectations, document deliverables, and understand costs.
                 </p>
               </div>
 
               <div className="p-5 rounded-2xl bg-[#fbf9f1] border border-[#0d1210]/5 space-y-2">
                 <span className="text-xs font-black text-[#0d1210] uppercase tracking-wider">Enterprise & Assets</span>
                 <p className="text-xs text-[#4d5953] leading-relaxed">
-                  The long-term objective. Document standard operating procedures (SOPs), coordinate teams, and build durable systems that survive beyond your daily labor.
+                  One possible path. People who choose entrepreneurship can learn to document processes, coordinate teams, test demand, and build systems that continue to work as the organization grows.
                 </p>
               </div>
             </div>
@@ -89,14 +89,14 @@ export default function AboutPage() {
                   <span>Transparent Assessment Rubrics</span>
                 </div>
                 <p className="text-xs text-[#4d5953] leading-relaxed">
-                  Every submission (whether a customer support escalation framework or an executive calendar audit) is scored against objective criteria by experienced operators.
+                  Programs should publish clear assessment criteria and identify which tasks receive feedback or formal review. Assessment methods and reviewer availability depend on the specific program.
                 </p>
               </div>
 
               <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-3 shadow-sm">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#0d1210]">
                   <CheckCircle2 className="w-4 h-4 text-[#059669]" />
-                  <span>Real Client Scenarios & Simulations</span>
+                  <span>Role-Based Scenarios & Guided Simulations</span>
                 </div>
                 <p className="text-xs text-[#4d5953] leading-relaxed">
                   Learners work through realistic briefs, calculate the economic impact of their work, and present auditable deliverables that clients can review.
@@ -112,10 +112,10 @@ export default function AboutPage() {
                 Learning Environments
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-[#0d1210]">
-                Active Online Streaming & Planned Physical Hubs
+                Online / Hybrid Options & Planned Physical Hubs
               </h2>
               <p className="text-xs text-[#4d5953]">
-                Live interactive streaming available today, with dedicated physical lab spaces entering pilot development.
+                Delivery options are confirmed per published cohort. Physical learning spaces in Douala and Yaoundé remain planned initiatives until availability is explicitly announced.
               </p>
             </div>
 
@@ -138,7 +138,7 @@ export default function AboutPage() {
                 </div>
 
                 <p className="text-xs text-[#4d5953] leading-relaxed">
-                  Planned physical center in Douala designed to provide dedicated workstations, high-speed fiber internet, 24/7 solar power backup, and in-person mentor code & offer reviews.
+                  Proposed future learning space. Facilities, equipment, opening dates, and in-person support are not available commitments until a cohort announcement confirms them.
                 </p>
 
                 <div className="grid grid-cols-2 gap-2 text-[11px] text-[#5f6c65] pt-2 border-t border-[#0d1210]/5">

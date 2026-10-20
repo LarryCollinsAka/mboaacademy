@@ -33,9 +33,9 @@ export function BuiltDifferentlySection() {
       title: t("diff.3.title", "Hybrid learning + Planned physical innovation hubs"),
       desc: t(
         "diff.3.desc",
-        "Live interactive hybrid streams available today, with dedicated physical innovation spaces planned in Douala (Akwa) and Yaounde (Bastos) during our next pilot phase to ensure 24/7 solar power and in-person mentorship."
+        "Delivery options are confirmed per published cohort. Physical learning spaces in Douala and Yaoundé remain planned initiatives until availability is explicitly announced."
       ),
-      example: "Status: Online cohorts active today &bull; Physical hub facilities entering pilot phase.",
+      example: "Status: Confirmed delivery details are published per cohort &bull; Physical hubs remain planned.",
     },
     {
       num: "04",

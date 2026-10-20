@@ -24,7 +24,7 @@ export function BottomCtaBanner() {
 
           <div className="relative z-10 max-w-3xl mx-auto space-y-6">
             <div className="inline-block text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-[#0d1210] text-[#ffcd00]">
-              Admissions Open &bull; Customer Support & Virtual Assistant Tracks
+              {t("cta.bottom.badge", "Explore practical learning paths")}
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">

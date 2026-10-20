@@ -1,68 +1,34 @@
-export interface TestimonialItem {
+export interface LearningOutcomeItem {
   id: string;
-  name: string;
-  role: string;
-  company: string;
-  avatar: string;
-  cohort: string;
-  mode: "Onsite Cohort (Douala)" | "Onsite Cohort (Yaounde)" | "Hybrid / Online";
-  rating: number;
-  story: string;
-  salaryIncrease?: string;
-  badge?: string;
+  title: string;
+  description: string;
+  examples: string[];
 }
 
-export const TESTIMONIALS_DATA: TestimonialItem[] = [
+// These are intended learning outputs, not testimonials or claims about graduate employment.
+export const LEARNING_OUTCOMES: LearningOutcomeItem[] = [
   {
-    id: "test-1",
-    name: "Marcelle Nguena",
-    role: "Full-Stack Software Engineer",
-    company: "Fintech Global Labs",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80",
-    cohort: "Cohort 4 - Full-Stack Track",
-    mode: "Onsite Cohort (Douala)",
-    rating: 5,
-    story: "Studying onsite at the Douala campus made all the difference. Having access to high-speed fiber internet, pair-programming mentors, and weekly mock technical interviews helped me secure a remote USD-paying engineering role within 45 days of graduation.",
-    salaryIncrease: "+240% compensation boost",
-    badge: "Hired Remotely",
+    id: "outcome-1",
+    title: "Communicate clearly and professionally",
+    description: "Practise responding to a customer, colleague, or stakeholder with the right tone, context, and next step.",
+    examples: ["Customer response", "Escalation note", "Professional email"],
   },
   {
-    id: "test-2",
-    name: "Cedric Fomekong",
-    role: "AI & Data Solutions Architect",
-    company: "AfriTech Analytics",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80",
-    cohort: "Cohort 5 - AI & Graph Engineering",
-    mode: "Hybrid / Online",
-    rating: 5,
-    story: "The curriculum goes beyond toy tutorials. We built vector-indexed RAG chatbots using Qdrant and knowledge graphs using FalkorDB. Employers were blown away when I walked them through my live capstone project during interviews.",
-    salaryIncrease: "Transitioned to Lead AI Engineer",
-    badge: "Fast Track",
+    id: "outcome-2",
+    title: "Coordinate work reliably",
+    description: "Organise information, track actions, identify dependencies, and make handoffs easier for the next person in the process.",
+    examples: ["Task tracker", "Meeting brief", "Handover checklist"],
   },
   {
-    id: "test-3",
-    name: "Aicha Bello",
-    role: "DevOps & Cloud Systems Engineer",
-    company: "CloudScale Africa",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=250&q=80",
-    cohort: "Cohort 3 - Cloud & DevOps",
-    mode: "Onsite Cohort (Yaounde)",
-    rating: 5,
-    story: "The physical lab in Yaounde felt like working in a real Silicon Valley startup. The instructors didn't just teach code—they taught production troubleshooting, Linux servers, and Docker multi-stage pipelines.",
-    salaryIncrease: "+180% salary increase",
-    badge: "Top Performer",
+    id: "outcome-3",
+    title: "Document and improve a process",
+    description: "Turn a repeatable task into a clear process that supports consistency, quality, and team learning.",
+    examples: ["Process map", "Knowledge-base article", "Standard operating procedure"],
   },
   {
-    id: "test-4",
-    name: "Kevin Ebongue",
-    role: "Product Designer & Frontend Developer",
-    company: "Mboa Studio Labs",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=250&q=80",
-    cohort: "Cohort 6 - UI/UX & Next.js",
-    mode: "Hybrid / Online",
-    rating: 5,
-    story: "Mboa Academy gave me both design aesthetics and coding muscle. The career advisors spent hours refining my GitHub portfolio and optimizing my resume for international remote marketplaces.",
-    salaryIncrease: "Landed 3 Global Contracts",
-    badge: "Contractor of the Year",
+    id: "outcome-4",
+    title: "Demonstrate role-specific capability",
+    description: "Build a portfolio of practical work samples and explain the decisions, quality criteria, and limits behind each result.",
+    examples: ["Assessed work sample", "Reflection note", "Capability evidence record"],
   },
 ];

@@ -14,19 +14,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HCIL Academy | Learn how money works. Build skills that create value. Turn value into ownership.",
+  title: "HCIL Academy | Build practical skills. Contribute across value chains.",
   description:
-    "HCIL Academy equips people with financial intelligence, practical capabilities, and asset-building discipline to bridge the gap between learning, earning, and owning. Physical innovation hubs in Douala & Yaounde, Cameroon.",
+    "HCIL Academy helps learners understand role expectations, practise realistic tasks, demonstrate practical capability, and contribute to teams, organizations, and value chains. English and French course descriptions are available for the initial published programs; delivery details are confirmed per cohort.",
   keywords: [
     "HCIL Academy",
-    "Financial Intelligence",
-    "Learn Build Earn Own",
-    "From Skill to Enterprise",
-    "Cash Flow Mastery",
-    "Cameroon Tech Innovation Hub",
-    "Rich Dad Poor Dad African EdTech",
-    "Douala Innovation Lab",
-    "Yaounde Tech Campus",
+    "Value chain skills",
+    "Practical learning",
+    "Role readiness",
+    "Evidence of capability",
+    "Customer support training",
+    "Administrative operations training",
+    "English and French learning",
+    "Cameroon professional training",
   ],
 };
 

@@ -95,7 +95,7 @@ export function AIFeaturesSection() {
                   <Target className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#ffcd00]/30 text-[#0d1210]">
-                  Pilot Feature
+                  Planned Pilot
                 </span>
               </div>
               <h3 className="text-base font-bold text-[#0d1210]">
@@ -104,12 +104,12 @@ export function AIFeaturesSection() {
               <p className="text-xs text-[#4d5953] leading-relaxed">
                 {t(
                   "ai.card.2.desc",
-                  "Maps verified student project evidence against real employer and contract briefs. Does not guarantee jobs, but provides objective skill fit."
+                  "A planned capability: connect assessed work evidence to role requirements where reliable briefs and review processes are available. It does not guarantee jobs."
                 )}
               </p>
             </div>
             <div className="pt-2 text-[11px] text-[#5f6c65]">
-              Testing with partner employers
+              Pilot concept; partner availability not confirmed
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export function AIFeaturesSection() {
               Transparent Assessment & Practical Learning
             </div>
             <p className="text-xs text-zinc-300 max-w-xl">
-              We separate what is active today from what is being piloted. We evaluate demonstrated capability through real project deliverables, rubrics, and client feedback.
+              We aim to distinguish available tools from planned features and to make practice tasks, expected deliverables, and assessment criteria clear for each program.
             </p>
           </div>
 

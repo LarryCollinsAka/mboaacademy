@@ -70,10 +70,10 @@ export function Hero() {
         {/* Launch Scope & Truthfulness Disclaimer */}
         <div className="text-xs text-[#5f6c65] space-y-1">
           <p className="font-semibold text-[#0d1210]">
-            Initial Tracks: Customer Service & Support Representative &bull; Executive & Virtual Assistant (VA)
+            Initial Programs: Customer Support Operations &bull; Administrative / Virtual Assistant Operations
           </p>
           <p className="text-[11px]">
-            Live Hybrid Streams &bull; Planned On-Site Innovation Hubs in Douala & Yaoundé (Pilot Phase)
+            Online or hybrid delivery is confirmed per cohort &bull; Physical hubs remain planned
           </p>
         </div>
 
@@ -86,14 +86,14 @@ export function Hero() {
               <div>
                 <span className="text-[10px] font-black uppercase tracking-wider text-[#059669] flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
-                  Live Educational Simulator &bull; Deterministic Model
+                  Optional Learning Lab &bull; Illustrative Service Scenario
                 </span>
                 <h3 className="text-base font-black text-[#0d1210]">
-                  Scenario: Virtual Assistant & Customer Support Client Retainers
+                  Scenario: Service Workload, Pricing & Operating Costs
                 </h3>
               </div>
               <span className="text-[10px] font-bold px-2.5 py-1 rounded bg-[#fbf9f1] text-[#5f6c65] border border-[#0d1210]/10 self-start sm:self-auto">
-                Cameroon XAF &bull; USD Reference
+                Cameroon XAF &bull; USD reference estimate
               </span>
             </div>
 
@@ -173,7 +173,7 @@ export function Hero() {
             <div className="p-3 rounded-xl bg-[#fbf9f1] border border-[#0d1210]/10 flex items-start gap-2.5 text-[11px] text-[#5f6c65] leading-relaxed">
               <HelpCircle className="w-4 h-4 text-[#059669] shrink-0 mt-0.5" />
               <span>
-                <strong>Illustrative educational scenario — not an earnings forecast or guarantee.</strong> In HCIL Academy, you learn how operating costs, pricing, and time allocation affect what you actually retain, moving from billable hours to sustainable systems.
+                <strong>Illustrative educational scenario — not an earnings forecast or guarantee.</strong> This example explores how workload, pricing, and operating costs affect a service. HCIL’s wider focus is helping people contribute reliably across roles and value chains; these figures are not an income forecast.
               </span>
             </div>
 

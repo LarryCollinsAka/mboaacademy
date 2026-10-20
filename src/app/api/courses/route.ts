@@ -5,9 +5,11 @@ import { getCoursesFromDb } from "@/lib/courses-service";
 // Keep this endpoint request-time so the build does not query production data.
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const locale = new URL(request.url).searchParams.get("locale") || "en";
+
   try {
-    const courses = await getCoursesFromDb();
+    const courses = await getCoursesFromDb(locale);
     return NextResponse.json({ courses });
   } catch (error) {
     console.error("[API /courses] Database query failed", error);

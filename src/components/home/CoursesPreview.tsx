@@ -3,19 +3,21 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CourseWithDetails } from "@/lib/courses-service";
+import { useI18n } from "@/lib/i18n";
 import { ArrowRight, Clock, Users, MapPin, Sparkles } from "lucide-react";
 
 export function CoursesPreview() {
+  const { locale, t } = useI18n();
   const [courses, setCourses] = useState<CourseWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/courses")
+    fetch(`/api/courses?locale=${encodeURIComponent(locale)}`)
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("Course API unavailable")))
       .then((data: { courses?: CourseWithDetails[] }) => setCourses(data.courses ?? []))
       .catch((error) => console.error("Could not load featured courses", error))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [locale]);
 
   const featuredCourses = courses.slice(0, 3);
 
@@ -28,13 +30,13 @@ export function CoursesPreview() {
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Sparkles className="w-3.5 h-3.5" />
-              Industry-Aligned Curricula
+              {t("courses.eyebrow", "Practical learning for real-world roles")}
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-              In-Demand <span className="gold-gradient-text">Career Tracks</span>
+              {t("courses.title", "Build capability. Contribute with confidence.")}
             </h2>
             <p className="text-zinc-400 text-sm sm:text-base max-w-2xl">
-              Curated by tech leaders and hiring managers. Master full-stack architectures, vector search, graph databases, and modern cloud deployment.
+              {t("courses.intro", "Learn the work behind a role, practise realistic tasks, and produce evidence of what you can do.")}
             </p>
           </div>
 
@@ -42,7 +44,7 @@ export function CoursesPreview() {
             href="/courses"
             className="inline-flex items-center gap-2 text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors"
           >
-            <span>View All Courses & Syllabi</span>
+            <span>{t("courses.viewAll", "View all learning paths")}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -127,12 +129,10 @@ export function CoursesPreview() {
               <div className="px-7 py-5 bg-white/[0.02] border-t border-white/5 flex items-center justify-between">
                 <div>
                   <div className="text-lg font-bold text-white flex items-baseline gap-1">
-                    ${course.priceUSD}
-                    <span className="text-xs text-zinc-400 font-normal">
-                      / {course.priceXAF.toLocaleString()} XAF
-                    </span>
+                    {course.currency === "XAF" ? `${course.priceXAF.toLocaleString()} XAF` : `$${course.priceUSD}`}
+                    {course.currency !== "XAF" && <span className="text-xs text-zinc-400 font-normal">/ {course.priceXAF.toLocaleString()} XAF</span>}
                   </div>
-                  <div className="text-[10px] text-emerald-400 font-medium">Installment plans available</div>
+                  <div className="text-[10px] text-emerald-400 font-medium">Payment options confirmed before enrollment</div>
                 </div>
 
                 <Link

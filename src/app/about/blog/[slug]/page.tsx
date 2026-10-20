@@ -104,20 +104,20 @@ export default function BlogPostPage({
           <div className="mercor-card p-8 rounded-3xl border border-amber-500/30 text-center space-y-4 bg-gradient-to-r from-amber-500/10 via-black to-emerald-500/10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400">
               <Star className="w-3.5 h-3.5 fill-current" />
-              Next Cohort Starting Soon
+              Explore Learning Paths
             </div>
             <h3 className="text-2xl font-bold text-white">
-              Turn These Insights into a Production Engineering Career
+              Connect learning to practical work.
             </h3>
             <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto">
-              Join our on-site labs in Douala or Yaounde, or learn hybrid online with live mentorship and guaranteed portfolio reviews.
+              Explore published programs and check each cohort’s confirmed format, schedule, and support. Practise role-relevant tasks and build work samples you can discuss with employers or clients.
             </p>
             <div className="pt-2">
               <Link
                 href="/courses"
                 className="gold-btn px-6 py-3 rounded-xl text-xs font-bold inline-flex items-center gap-2"
               >
-                <span>Explore Open Cohorts</span>
+                <span>Explore Learning Paths</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

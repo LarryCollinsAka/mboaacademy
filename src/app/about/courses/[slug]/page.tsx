@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CourseWithDetails } from "@/lib/courses-service";
 import { PaymentModal } from "@/components/checkout/PaymentModal";
+import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
 import {
   Clock,
@@ -28,6 +29,7 @@ export default function CourseDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
+  const { locale } = useI18n();
   const [course, setCourse] = useState<CourseWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -35,7 +37,7 @@ export default function CourseDetailPage({
   useEffect(() => {
     async function fetchCourse() {
       try {
-        const res = await fetch("/api/courses");
+        const res = await fetch(`/api/courses?locale=${encodeURIComponent(locale)}`, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           const match = (data.courses || []).find((c: CourseWithDetails) => c.slug === slug);
@@ -48,7 +50,7 @@ export default function CourseDetailPage({
       }
     }
     fetchCourse();
-  }, [slug]);
+  }, [slug, locale]);
 
   if (isLoading) {
     return (
@@ -174,24 +176,24 @@ export default function CourseDetailPage({
                 <div className="flex items-center gap-2.5">
                   <Building className="w-5 h-5 text-[#059669]" />
                   <h3 className="text-base font-bold text-[#0d1210]">
-                    Physical Campus Lab Access (Douala & Yaounde)
+                    Learning format and delivery
                   </h3>
                 </div>
                 <p className="text-xs text-[#4d5953] leading-relaxed">
-                  Enrollment includes a dedicated desk at our Douala (Akwa) and Yaounde (Bastos) innovation hubs, continuous industrial solar power, 1Gbps fiber broadband, and in-person mentor code reviews.
+                  The confirmed delivery format is shown in the cohort details. Online or hybrid access, venue, equipment, and in-person support depend on the specific cohort and will be stated before enrollment. Planned physical hubs are not included unless explicitly confirmed.
                 </p>
                 <div className="flex flex-wrap gap-4 text-xs font-medium text-[#4d5953] pt-2 border-t border-[#0d1210]/5">
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
-                    Akwa Innovation Hub, Douala
+                    Douala hub: planned
                   </span>
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
-                    Bastos Tech Campus, Yaounde
+                    Yaoundé hub: planned
                   </span>
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
-                    Live Interactive Stream Worldwide
+                    Online delivery where offered
                   </span>
                 </div>
               </div>
@@ -245,7 +247,7 @@ export default function CourseDetailPage({
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>Physical lab desk + 24/7 solar power</span>
+                  <span>Planned physical hub; availability to be confirmed</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />

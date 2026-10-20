@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CourseWithDetails } from "@/lib/courses-service";
 import { PaymentModal } from "@/components/checkout/PaymentModal";
+import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
 import {
   Clock,
@@ -28,6 +29,7 @@ export default function CourseDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
+  const { locale, t } = useI18n();
   const [course, setCourse] = useState<CourseWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -35,7 +37,7 @@ export default function CourseDetailPage({
   useEffect(() => {
     async function fetchCourse() {
       try {
-        const res = await fetch("/api/courses");
+        const res = await fetch(`/api/courses?locale=${encodeURIComponent(locale)}`, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           const match = (data.courses || []).find((c: CourseWithDetails) => c.slug === slug);
@@ -48,7 +50,7 @@ export default function CourseDetailPage({
       }
     }
     fetchCourse();
-  }, [slug]);
+  }, [slug, locale]);
 
   if (isLoading) {
     return (
@@ -57,7 +59,7 @@ export default function CourseDetailPage({
         <main className="flex-1 flex items-center justify-center py-32">
           <div className="text-center space-y-3">
             <div className="w-10 h-10 border-3 border-[#071f15] border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-[#5f6c65] font-semibold">Loading HCIL curriculum...</p>
+            <p className="text-xs text-[#5f6c65] font-semibold">{t("courseDetail.loading", "Loading learning path...")}</p>
           </div>
         </main>
         <Footer />
@@ -70,10 +72,10 @@ export default function CourseDetailPage({
       <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210]">
         <Navbar />
         <main className="flex-1 max-w-xl mx-auto py-24 text-center space-y-4 px-4">
-          <h1 className="text-2xl font-bold">Course Not Found</h1>
-          <p className="text-sm text-[#4d5953]">The requested HCIL program could not be located in the database.</p>
+          <h1 className="text-2xl font-bold">{t("courseDetail.notFound", "Learning path not found")}</h1>
+          <p className="text-sm text-[#4d5953]">{t("courseDetail.notFoundDesc", "We could not find this published learning path.")}</p>
           <Link href="/courses" className="btn-dark px-6 py-2.5 rounded-full text-xs font-bold inline-block">
-            View All Programs
+            {t("courseDetail.allPrograms", "View all learning paths")}
           </Link>
         </main>
         <Footer />
@@ -94,7 +96,7 @@ export default function CourseDetailPage({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-xs text-[#5f6c65]">
               <Link href="/courses" className="hover:text-[#0d1210] font-medium">
-                Programs
+                {t("courseDetail.breadcrumb", "Programs")}
               </Link>
               <span>/</span>
               <span>{course.category}</span>
@@ -108,11 +110,11 @@ export default function CourseDetailPage({
               </span>
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] border border-[#059669]/20 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
-                {course.mode} Learning Mode
+                {course.mode} · {t("courseDetail.learningMode", "learning mode")}
               </span>
               <span className="text-xs text-[#5f6c65] font-semibold">
                 <Users className="w-3.5 h-3.5 text-[#059669] inline mr-1" />
-                {course.studentsCount} Enrolled Learners
+                {course.studentsCount} {t("courseDetail.learners", "learners enrolled")}
               </span>
             </div>
           </div>
@@ -135,7 +137,7 @@ export default function CourseDetailPage({
               </div>
 
               <section className="rounded-2xl border border-[#0d1210]/10 bg-white p-5 space-y-3">
-                <h2 className="text-sm font-black text-[#0d1210]">Cohort schedule & trainers</h2>
+                <h2 className="text-sm font-black text-[#0d1210]">{t("courseDetail.schedule", "Cohort schedule & trainers")}</h2>
                 {course.cohorts.length ? course.cohorts.map((cohort) => (
                   <div key={cohort.id} className="rounded-xl bg-[#fbf9f1] p-4 space-y-1.5 text-xs">
                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -143,19 +145,19 @@ export default function CourseDetailPage({
                       <span className="rounded-full bg-[#059669]/10 px-2 py-1 text-[#059669] font-bold">{cohort.status.replaceAll("_", " ")}</span>
                     </div>
                     <p>{new Date(cohort.startsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: cohort.timezone })} – {new Date(cohort.endsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: cohort.timezone })} ({cohort.durationLabel})</p>
-                    <p>Mode: {cohort.mode} · Time zone: {cohort.timezone}</p>
-                    <p>Trainer(s): {cohort.trainers.map((trainer) => trainer.name).join(", ") || "To be assigned"}</p>
-                    {cohort.weeklyLearningHours !== null && <p>Expected learning time: {cohort.weeklyLearningHours} hours/week</p>}
+                    <p>{t("courseDetail.mode", "Mode")}: {cohort.mode} · {t("courseDetail.timezone", "Time zone")}: {cohort.timezone}</p>
+                    <p>{t("courseDetail.trainers", "Trainer(s)")}: {cohort.trainers.map((trainer) => trainer.name).join(", ") || t("courses.toBeAssigned", "To be assigned")}</p>
+                    {cohort.weeklyLearningHours !== null && <p>{t("courseDetail.expectedTime", "Expected learning time")}: {cohort.weeklyLearningHours} {t("courseDetail.hoursPerWeek", "hours/week")}</p>}
                   </div>
                 )) : (
-                  <p className="text-xs text-[#5f6c65]">The curriculum is available for review. Cohort dates, trainer assignments, and registration windows will appear here once scheduled.</p>
+                  <p className="text-xs text-[#5f6c65]">{t("courseDetail.scheduleTba", "The curriculum is available for review. Cohort dates, trainer assignments, and registration windows will appear here once scheduled.")}</p>
                 )}
               </section>
 
               {/* Skills and Competencies */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#071f15]">
-                  Verified Skills & Economic Outcomes Taught
+                  {t("courseDetail.skillsTitle", "Skills practised in this program")}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {course.skills.map((skill, idx) => (
@@ -174,24 +176,24 @@ export default function CourseDetailPage({
                 <div className="flex items-center gap-2.5">
                   <Building className="w-5 h-5 text-[#059669]" />
                   <h3 className="text-base font-bold text-[#0d1210]">
-                    Physical Campus Lab Access (Douala & Yaounde)
+                    {t("courseDetail.deliveryTitle", "Learning format and delivery") }
                   </h3>
                 </div>
                 <p className="text-xs text-[#4d5953] leading-relaxed">
-                  Enrollment includes a dedicated desk at our Douala (Akwa) and Yaounde (Bastos) innovation hubs, continuous industrial solar power, 1Gbps fiber broadband, and in-person mentor code reviews.
+                  {t("courseDetail.deliveryDesc", "The confirmed delivery format is shown in the cohort details. Online or hybrid access, venue, equipment, and in-person support depend on the specific cohort and will be stated before enrollment. Planned physical hubs are not included unless explicitly confirmed.")}
                 </p>
                 <div className="flex flex-wrap gap-4 text-xs font-medium text-[#4d5953] pt-2 border-t border-[#0d1210]/5">
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
-                    Akwa Innovation Hub, Douala
+                    {t("courseDetail.doualaPlanned", "Douala hub: planned") }
                   </span>
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
-                    Bastos Tech Campus, Yaounde
+                    {t("courseDetail.yaoundePlanned", "Yaoundé hub: planned") }
                   </span>
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" />
-                    Live Interactive Stream Worldwide
+                    {t("courseDetail.online", "Online delivery where offered") }
                   </span>
                 </div>
               </div>
@@ -202,7 +204,7 @@ export default function CourseDetailPage({
             <div className="cream-card p-8 rounded-3xl bg-white border-2 border-[#ffcd00] sticky top-28 space-y-6 shadow-md">
               <div className="space-y-2">
                 <span className="text-[10px] font-black uppercase tracking-wider text-[#059669]">
-                  Total Program Tuition
+                  {t("courseDetail.tuition", "Program tuition") }
                 </span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-black text-[#0d1210]">
@@ -211,7 +213,7 @@ export default function CourseDetailPage({
                   {course.currency !== "XAF" && <span className="text-sm text-[#5f6c65] font-semibold">/ {course.priceXAF.toLocaleString()} XAF</span>}
                 </div>
                 <p className="text-xs text-[#059669] font-bold">
-                  Payment options are confirmed during enrollment
+                  {t("courseDetail.paymentOptions", "Payment options are confirmed before enrollment")}
                 </p>
               </div>
 
@@ -221,7 +223,7 @@ export default function CourseDetailPage({
                   className="btn-dark w-full py-4 rounded-full text-sm font-bold flex items-center justify-center gap-2 shadow-sm"
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Enroll in Program</span>
+                  <span>{t("courseDetail.enroll", "Enquire about enrollment")}</span>
                 </button>
 
                 {firstLesson && (
@@ -230,7 +232,7 @@ export default function CourseDetailPage({
                     className="w-full py-3 rounded-full text-xs font-bold text-[#0d1210] bg-[#fbf9f1] hover:bg-[#ffcd00]/20 border border-[#0d1210]/15 flex items-center justify-center gap-2 transition-all"
                   >
                     <PlayCircle className="w-4 h-4 text-[#059669]" />
-                    <span>Free Preview in Student Studio</span>
+                    <span>{t("courseDetail.preview", "Open free lesson preview")}</span>
                   </Link>
                 )}
               </div>
@@ -243,15 +245,15 @@ export default function CourseDetailPage({
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>Practical exercises and portfolio-focused learning</span>
+                  <span>{t("courseDetail.practical", "Practical exercises and role-relevant work samples")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>Cash flow simulator + student notes studio</span>
+                  <span>{t("courseDetail.tools", "Learning tools and structured notes")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>Verified HCIL capability certificate</span>
+                  <span>{t("courseDetail.certificate", "Certificate subject to published assessment criteria")}</span>
                 </div>
               </div>
 
@@ -263,13 +265,13 @@ export default function CourseDetailPage({
           <div className="space-y-6 pt-8 border-t border-[#0d1210]/10">
             <div className="space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-[#059669]">
-                Structured Progression
+                {t("courseDetail.progression", "Learning progression")}
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-[#0d1210]">
-                Curriculum Modules & Lessons
+                {t("courseDetail.modules", "Modules and lessons")}
               </h2>
               <p className="text-xs text-[#4d5953]">
-                Practical exercises, financial simulations, and genuine client problem-solving.
+                {t("courseDetail.curriculumDesc", "Practical exercises and role-relevant work samples connect the lessons to the tasks this role supports.")}
               </p>
             </div>
 

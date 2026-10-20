@@ -6,90 +6,49 @@ import { Footer } from "@/components/layout/Footer";
 import { CourseWithDetails } from "@/lib/courses-service";
 import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
-import {
-  Search,
-  BookOpen,
-  Clock,
-  MapPin,
-  ArrowRight,
-  Sparkles,
-  CheckCircle2,
-} from "lucide-react";
+import { Search, BookOpen, Clock, MapPin, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 
 export function CoursesPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [courses, setCourses] = useState<CourseWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedMode, setSelectedMode] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    const controller = new AbortController();
-
     async function loadCourses() {
+      setIsLoading(true);
+      setLoadError(null);
+      setSelectedCategory("");
       try {
-        setIsLoading(true);
-        setLoadError(null);
-
-        const res = await fetch("/api/courses", {
-          signal: controller.signal,
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          throw new Error(`Course API returned HTTP ${res.status}`);
-        }
-
+        const res = await fetch(`/api/courses?locale=${encodeURIComponent(locale)}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Course API returned HTTP ${res.status}`);
         const data = await res.json();
-
-        if (!Array.isArray(data.courses)) {
-          throw new Error("The course API returned an unexpected response.");
-        }
-
+        if (!Array.isArray(data.courses)) throw new Error("The course API returned an unexpected response.");
         setCourses(data.courses);
-      } catch (error) {
-        if (error instanceof Error && error.name === "AbortError") {
-          return;
-        }
-
-        console.error("Failed to load courses:", error);
-        setLoadError(
-          "We couldn't load the courses right now. Please try again.",
-        );
+      } catch (err) {
+        console.error("Failed fetching courses from API", err);
+        setCourses([]);
+        setLoadError("We could not load the learning paths right now. Please try again shortly.");
       } finally {
-        if (!controller.signal.aborted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     }
-
     loadCourses();
+  }, [locale]);
 
-    return () => controller.abort();
-  }, []);
-
-  const categories = [
-    "All",
-    ...Array.from(
-      new Set(courses.map((course) => course.category).filter(Boolean)),
-    ).sort(),
-  ];
+  const categories = Array.from(new Set(courses.map((course) => course.category).filter(Boolean))).sort();
   const modes = ["All", "HYBRID", "ONSITE", "ONLINE"];
 
   const filteredCourses = courses.filter((course) => {
-    const matchesCategory =
-      selectedCategory === "All" ||
-      course.category.includes(selectedCategory) ||
-      course.skills.some((s) => s.includes(selectedCategory));
+    const matchesCategory = !selectedCategory || course.category === selectedCategory;
     const matchesMode = selectedMode === "All" || course.mode === selectedMode;
     const matchesSearch =
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.headline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.skills.some((s) =>
-        s.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
+      course.skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return matchesCategory && matchesMode && matchesSearch;
   });
@@ -100,32 +59,30 @@ export function CoursesPage() {
 
       <main className="flex-1 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ffcd00]/20 border border-[#ffcd00] text-xs font-bold text-[#0d1210]">
               <Sparkles className="w-3.5 h-3.5" />
-              HCIL Curriculum & Pillars
+              {t("courses.eyebrow", "Practical learning for real-world roles")}
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-[#0d1210] tracking-tight">
-              Programs Built for{" "}
-              <span className="underline decoration-[#ffcd00] decoration-wavy">
-                Real Economic Agency
-              </span>
+              {t("courses.title", "Build capability. Contribute with confidence.")}
             </h1>
             <p className="text-[#4d5953] text-sm sm:text-base leading-relaxed">
-              Every course at HCIL Academy connects technical skill with cash
-              flow literacy, verified evidence, and sustainable ownership.
+              {t("courses.intro", "Learn the work behind a role, practise realistic tasks, and produce evidence of what you can do. Our courses connect individual skills to the customers, teams, and processes they support.")}
             </p>
           </div>
 
           {/* Search & Filter Bar */}
           <div className="cream-card p-6 rounded-2xl bg-white border border-[#0d1210]/10 space-y-4 shadow-sm">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              
               <div className="relative w-full md:w-96">
                 <Search className="w-4 h-4 text-[#5f6c65] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Search by skill, cash flow, or pillar..."
+                  placeholder={t("courses.search", "Search courses, skills, or tasks...")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-full bg-[#fbf9f1] border border-[#0d1210]/15 text-xs text-[#0d1210] placeholder-[#5f6c65] focus:outline-none focus:border-[#ffcd00]"
@@ -133,9 +90,7 @@ export function CoursesPage() {
               </div>
 
               <div className="flex items-center gap-2 self-start md:self-auto overflow-x-auto w-full md:w-auto">
-                <span className="text-xs text-[#5f6c65] font-semibold">
-                  Mode:
-                </span>
+                <span className="text-xs text-[#5f6c65] font-semibold">{t("courses.mode", "Mode:")}</span>
                 {modes.map((mode) => (
                   <button
                     key={mode}
@@ -146,13 +101,14 @@ export function CoursesPage() {
                         : "bg-[#fbf9f1] text-[#4d5953] hover:text-[#0d1210] border border-[#0d1210]/10"
                     }`}
                   >
-                    {mode}
+                    {mode === "All" ? t("courses.allModes", "All modes") : mode === "HYBRID" ? t("courses.hybrid", "Hybrid") : mode === "ONSITE" ? t("courses.onsite", "On-site") : t("courses.online", "Online")}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2 pt-2 border-t border-[#0d1210]/5">
+              <button key="all-categories" onClick={() => setSelectedCategory("")} className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${!selectedCategory ? "bg-[#071f15] text-[#ffcd00]" : "text-[#4d5953] hover:text-[#0d1210] bg-[#fbf9f1] border border-[#0d1210]/10"}`}>{t("courses.allCategories", "All categories")}</button>
               {categories.map((cat) => (
                 <button
                   key={cat}
@@ -171,39 +127,27 @@ export function CoursesPage() {
 
           {/* Loading or Courses Grid */}
           {loadError ? (
-            <div
-              role="alert"
-              className="text-center py-20 rounded-2xl bg-white border border-red-200"
-            >
+            <div role="alert" className="rounded-2xl border border-red-200 bg-white py-16 text-center">
               <p className="text-sm text-red-700">{loadError}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="mt-3 text-xs font-bold text-emerald-700 hover:underline"
-              >
-                Try again
-              </button>
+              <button onClick={() => window.location.reload()} className="mt-3 text-xs font-bold text-emerald-700 hover:underline">{t("courses.retry", "Try again")}</button>
             </div>
           ) : isLoading ? (
             <div className="text-center py-24 space-y-3">
               <div className="w-10 h-10 border-3 border-[#071f15] border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-xs text-[#5f6c65] font-medium">
-                Fetching programs from HCIL database...
-              </p>
+              <p className="text-xs text-[#5f6c65] font-medium">{t("courses.loading", "Loading learning paths...")}</p>
             </div>
           ) : filteredCourses.length === 0 ? (
             <div className="text-center py-20 cream-card rounded-2xl bg-white">
-              <p className="text-[#5f6c65] text-sm">
-                No programs found matching criteria.
-              </p>
+              <p className="text-[#5f6c65] text-sm">{t("courses.empty", "No learning paths match those filters.")}</p>
               <button
                 onClick={() => {
-                  setSelectedCategory("All");
+                  setSelectedCategory("");
                   setSelectedMode("All");
                   setSearchQuery("");
                 }}
                 className="mt-3 text-xs font-bold text-[#059669] hover:underline"
               >
-                Reset All Filters
+                {t("courses.reset", "Reset filters")}
               </button>
             </div>
           ) : (
@@ -214,6 +158,7 @@ export function CoursesPage() {
                   className="cream-card rounded-3xl flex flex-col justify-between overflow-hidden bg-white hover:border-[#ffcd00] transition-all duration-200 shadow-sm"
                 >
                   <div className="p-7 space-y-5">
+                    
                     {/* Badges */}
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#ffcd00]/30 text-[#0d1210]">
@@ -262,7 +207,7 @@ export function CoursesPage() {
                       </div>
                       <div className="flex items-center gap-1.5 font-medium">
                         <BookOpen className="w-3.5 h-3.5 text-[#059669]" />
-                        <span>{course.studentsCount} enrolled</span>
+                        <span>{course.studentsCount} {t("courses.enrolled", "enrolled")}</span>
                       </div>
                     </div>
 
@@ -270,64 +215,32 @@ export function CoursesPage() {
                       <MapPin className="w-3.5 h-3.5 text-[#059669] shrink-0 mt-0.5" />
                       {course.cohorts.length > 0 ? (
                         <div className="space-y-1">
-                          <p className="font-semibold text-[#0d1210]">
-                            Next cohort:{" "}
-                            {new Date(
-                              course.cohorts[0].startsAt,
-                            ).toLocaleDateString(undefined, {
-                              dateStyle: "medium",
-                              timeZone: course.cohorts[0].timezone,
-                            })}{" "}
-                            –{" "}
-                            {new Date(
-                              course.cohorts[0].endsAt,
-                            ).toLocaleDateString(undefined, {
-                              dateStyle: "medium",
-                              timeZone: course.cohorts[0].timezone,
-                            })}
-                          </p>
-                          <p>
-                            {course.cohorts[0].name} ·{" "}
-                            {course.cohorts[0].timezone}
-                          </p>
-                          <p>
-                            Trainer(s):{" "}
-                            {course.cohorts[0].trainers
-                              .map((trainer) => trainer.name)
-                              .join(", ") || "To be assigned"}
-                          </p>
+                          <p className="font-semibold text-[#0d1210]">{t("courses.nextCohort", "Next cohort:")} {new Date(course.cohorts[0].startsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: course.cohorts[0].timezone })} – {new Date(course.cohorts[0].endsAt).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: course.cohorts[0].timezone })}</p>
+                          <p>{course.cohorts[0].name} · {course.cohorts[0].timezone}</p>
+                          <p>{t("courses.trainers", "Trainer(s):")} {course.cohorts[0].trainers.map((trainer) => trainer.name).join(", ") || t("courses.toBeAssigned", "To be assigned")}</p>
                         </div>
                       ) : (
-                        <span>
-                          Upcoming cohort dates and trainers to be announced
-                        </span>
+                        <span>{t("courses.cohortTba", "Cohort dates and trainers will be announced.")}</span>
                       )}
                     </div>
+
                   </div>
 
                   {/* Pricing and Action */}
                   <div className="px-7 py-5 bg-[#fbf9f1] border-t border-[#0d1210]/10 flex items-center justify-between">
                     <div>
                       <div className="text-lg font-black text-[#0d1210] flex items-baseline gap-1">
-                        {course.currency === "XAF"
-                          ? `${course.priceXAF.toLocaleString()} XAF`
-                          : `$${course.priceUSD}`}
-                        {course.currency !== "XAF" && (
-                          <span className="text-xs text-[#5f6c65] font-normal">
-                            / {course.priceXAF.toLocaleString()} XAF
-                          </span>
-                        )}
+                        {course.currency === "XAF" ? `${course.priceXAF.toLocaleString()} XAF` : `$${course.priceUSD}`}
+                        {course.currency !== "XAF" && <span className="text-xs text-[#5f6c65] font-normal">/ {course.priceXAF.toLocaleString()} XAF</span>}
                       </div>
-                      <div className="text-[10px] text-[#059669] font-bold">
-                        Installment plans accepted
-                      </div>
+                      <div className="text-[10px] text-[#059669] font-bold">{t("courses.paymentOptions", "Payment options confirmed during enrollment")}</div>
                     </div>
 
                     <Link
                       href={`/courses/${course.slug}`}
                       className="btn-dark px-4 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm"
                     >
-                      <span>Syllabus</span>
+                      <span>{t("courses.viewDetails", "View program")}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
@@ -335,6 +248,7 @@ export function CoursesPage() {
               ))}
             </div>
           )}
+
         </div>
       </main>
 

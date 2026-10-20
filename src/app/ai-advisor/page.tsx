@@ -9,23 +9,21 @@ import {
   Sparkles,
   Bot,
   BrainCircuit,
-  Network,
   CheckCircle2,
   ArrowRight,
   Send,
   Target,
   Clock,
   MapPin,
-  TrendingUp,
   RefreshCw
 } from "lucide-react";
 
 export default function AIAdvisorPage() {
   // Wizard state
   const [step, setStep] = useState<number>(1);
-  const [goal, setGoal] = useState<string>("fullstack");
+  const [goal, setGoal] = useState<string>("customer_support");
   const [experience, setExperience] = useState<string>("intermediate");
-  const [learningMode, setLearningMode] = useState<string>("onsite_douala");
+  const [learningMode, setLearningMode] = useState<string>("online");
   const [timeCommitment, setTimeCommitment] = useState<string>("fulltime");
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [matchResult, setMatchResult] = useState<any | null>(null);
@@ -36,7 +34,7 @@ export default function AIAdvisorPage() {
   >([
     {
       sender: "ai",
-      text: "Hello! I am Mboa AI, your Career & Admissions Advisor. Whether you're deciding between Full-Stack or AI Engineering, or wondering about job prospects in Douala, Yaounde, or remote international roles, I'm here to help!",
+      text: "Hello! I’m HCIL’s learning-path guide. I can help you explore a starting point based on the kind of work you want to practise. Recommendations are guidance, not a hiring prediction; check each course’s published content and delivery details.",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
@@ -46,25 +44,23 @@ export default function AIAdvisorPage() {
     setIsAnalyzing(true);
     setTimeout(() => {
       setIsAnalyzing(false);
-      let matchedCourse = COURSES_DATA[0];
-
-      if (goal === "ai") {
-        matchedCourse = COURSES_DATA[1];
-      } else if (goal === "cloud") {
-        matchedCourse = COURSES_DATA[2];
-      } else if (goal === "design") {
-        matchedCourse = COURSES_DATA[3];
-      }
+      const courseIndexByGoal: Record<string, number> = {
+        career_readiness: 0,
+        profile_readiness: 1,
+        customer_support: 2,
+        admin_operations: 3,
+      };
+      const matchedCourse = COURSES_DATA[courseIndexByGoal[goal] ?? 2];
+      const practiceFocus = matchedCourse.skills;
+      const experienceLabel = experience === "beginner" ? "new to this type of work" : experience === "advanced" ? "experienced in a related role" : "some related experience";
+      const formatLabel = learningMode === "online" ? "online, where offered" : learningMode === "hybrid" ? "hybrid, where confirmed" : "open to available formats";
+      const timeLabel = timeCommitment === "fulltime" ? "a larger weekly time commitment" : "an evening/weekend or part-time schedule";
 
       setMatchResult({
         course: matchedCourse,
-        compatibilityScore: 98,
-        graphPrerequisites: [
-          { name: "Git & Version Control", status: "Foundational" },
-          { name: "Relational Modeling (Postgres)", status: "Target Focus" },
-          { name: "Vector & Graph Ontologies", status: "High Advantage" },
-        ],
-        hiringOutlook: "Top 5% market demand with $1,500 - $3,500/mo remote starting salaries",
+        recommendationReason: `You described yourself as ${experienceLabel} and prefer ${formatLabel} with ${timeLabel}. This course is a starting suggestion; compare its workload and tasks with your actual availability and goals.`,
+        practiceFocus,
+        nextStep: "Course availability, cohort format, assessment criteria, and payment options must be confirmed on the course page before enrolling. This recommendation does not predict employment or income.",
       });
       setStep(5); // Show results
     }, 1200);
@@ -83,13 +79,13 @@ export default function AIAdvisorPage() {
       const lower = q.toLowerCase();
 
       if (lower.includes("douala") || lower.includes("yaounde") || lower.includes("onsite")) {
-        reply = "Our physical campuses in **Douala (Akwa)** and **Yaounde (Bastos)** feature continuous solar backup power, 1Gbps fiber internet, and daily on-site mentors. Attending on-site accelerates your learning velocity by 3x compared to pure self-study!";
+        reply = "Physical learning hubs in Douala and Yaoundé are planned, not guaranteed current facilities. Please check the course page for the specific cohort’s confirmed delivery format, venue, and support.";
       } else if (lower.includes("job") || lower.includes("salary") || lower.includes("remote")) {
-        reply = "Graduates from our Full-Stack and AI tracks currently hold roles at international tech startups and local African fintechs, with average starting compensation between **$1,500 - $3,500/mo** for remote software engineering contracts.";
+        reply = "A course can help you practise relevant tasks and build work samples, but hiring outcomes and compensation depend on many factors. HCIL does not promise jobs or salary levels. Start by reviewing the course deliverables and the requirements of roles you are interested in.";
       } else if (lower.includes("beginner") || lower.includes("no experience")) {
-        reply = "Don't worry! We offer a 2-week pre-cohort bootcamp covering terminal fundamentals, Git, and JavaScript logic to ensure you start your cohort with total confidence.";
+        reply = "You can begin with a foundational program and build from there. Review the course prerequisites and practice tasks, then choose a pace that fits your current skills and available time.";
       } else {
-        reply = `That is an excellent career consideration. Based on our industry hiring partners, combining hands-on PostgreSQL, Next.js, and Vector/Graph DBs gives you an exceptional competitive edge. Would you like to schedule an in-person campus consultation?`;
+        reply = `A useful starting point is to identify the work you want to do, the people or process that work supports, and the evidence you can produce. Explore the published learning paths and confirm the cohort details before making a decision.`;
       }
 
       setChatMessages((prev) => [...prev, { sender: "ai", text: reply }]);
@@ -108,13 +104,13 @@ export default function AIAdvisorPage() {
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Sparkles className="w-3.5 h-3.5" />
-              Marketplace-Style AI Matcher
+              Role & Learning-Path Guide
             </div>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
-              AI Career & Cohort <span className="gold-gradient-text">Advisor</span>
+              Explore a Practical <span className="gold-gradient-text">Learning Path</span>
             </h1>
             <p className="text-zinc-400 text-base leading-relaxed">
-              Powered by FalkorDB Graph dependencies and Qdrant semantic vectors. Answer 4 quick questions to find the high-impact career track tailored to your goals.
+              Answer four quick questions to explore a starting course. This guide uses your stated preferences; it is not a live labor-market forecast or an automated hiring assessment.
             </p>
           </div>
 
@@ -138,16 +134,16 @@ export default function AIAdvisorPage() {
               {step === 1 && (
                 <div className="space-y-5 animate-in fade-in duration-150">
                   <div>
-                    <h2 className="text-xl font-bold text-white">What is your dream career role?</h2>
-                    <p className="text-xs text-zinc-400 mt-1">Select the discipline that excites you most:</p>
+                    <h2 className="text-xl font-bold text-white">What kind of work would you like to prepare for?</h2>
+                    <p className="text-xs text-zinc-400 mt-1">Choose the closest starting point. You can explore other roles later:</p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
-                      { id: "fullstack", title: "Full-Stack Web Engineer", desc: "Next.js, TypeScript, Postgres & Redis" },
-                      { id: "ai", title: "AI & Graph Engineer", desc: "Qdrant Vector DB, FalkorDB, RAG & LLMs" },
-                      { id: "cloud", title: "Cloud & DevOps Specialist", desc: "Docker, Kubernetes, Linux & CI/CD" },
-                      { id: "design", title: "UI/UX & Product Designer", desc: "Design Systems, Figma & Frontend UX" },
+                      { id: "career_readiness", title: "Prepare for a target role", desc: "Understand role requirements and present relevant experience." },
+                      { id: "profile_readiness", title: "Improve my professional profile", desc: "Present capabilities and work evidence clearly." },
+                      { id: "customer_support", title: "Customer support operations", desc: "Practise customer communication, case handling, and escalation." },
+                      { id: "admin_operations", title: "Administrative operations", desc: "Practise coordination, documentation, and task tracking." },
                     ].map((opt) => (
                       <button
                         key={opt.id}
@@ -169,7 +165,7 @@ export default function AIAdvisorPage() {
                     onClick={() => setStep(2)}
                     className="gold-btn w-full py-3.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 mt-4"
                   >
-                    <span>Continue to Technical Background</span>
+                    <span>Continue to Role Experience</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -179,15 +175,15 @@ export default function AIAdvisorPage() {
               {step === 2 && (
                 <div className="space-y-5 animate-in fade-in duration-150">
                   <div>
-                    <h2 className="text-xl font-bold text-white">What is your current coding background?</h2>
-                    <p className="text-xs text-zinc-400 mt-1">This helps us customize prerequisite support:</p>
+                    <h2 className="text-xl font-bold text-white">How familiar are you with the tasks in your target role?</h2>
+                    <p className="text-xs text-zinc-400 mt-1">This helps you think about where to begin:</p>
                   </div>
 
                   <div className="space-y-3">
                     {[
-                      { id: "beginner", title: "Total Beginner / Non-Technical", desc: "Little to no programming experience. Switching from other professions." },
-                      { id: "intermediate", title: "Familiar with Basics (HTML/CSS/JS or Python)", desc: "Can write basic scripts and understand core logic, but want enterprise production skills." },
-                      { id: "advanced", title: "Experienced Developer Looking to Upskill", desc: "Already working in tech; want to master cutting-edge Next.js, Vector DBs, and Graph DBs." },
+                      { id: "beginner", title: "New to this type of work", desc: "I need clear foundations and guided practice." },
+                      { id: "intermediate", title: "Some related experience", desc: "I know some of the tasks but want more consistent execution." },
+                      { id: "advanced", title: "Experienced in a related role", desc: "I want to improve quality, speed, communication, or coordination." },
                     ].map((opt) => (
                       <button
                         key={opt.id}
@@ -227,15 +223,15 @@ export default function AIAdvisorPage() {
               {step === 3 && (
                 <div className="space-y-5 animate-in fade-in duration-150">
                   <div>
-                    <h2 className="text-xl font-bold text-white">Where would you prefer to learn?</h2>
-                    <p className="text-xs text-zinc-400 mt-1">Select your preferred learning hub:</p>
+                    <h2 className="text-xl font-bold text-white">Which learning format would you prefer?</h2>
+                    <p className="text-xs text-zinc-400 mt-1">Choose a preference; actual availability depends on each published cohort:</p>
                   </div>
 
                   <div className="space-y-3">
                     {[
-                      { id: "onsite_douala", title: "Douala Innovation Hub (Akwa)", desc: "On-site desk with 24/7 solar power, 1Gbps fiber broadband, and daily in-person mentors." },
-                      { id: "onsite_yaounde", title: "Yaounde Tech Campus (Bastos)", desc: "On-site desk with collaborative peer pods and live weekly code defense hackathons." },
-                      { id: "online_global", title: "Hybrid / Global Online Live", desc: "Access high-definition interactive live streams, full LMS recordings, and remote mentor chat." },
+                      { id: "online", title: "Online, where offered", desc: "Learn remotely when the published cohort provides an online option." },
+                      { id: "hybrid", title: "Hybrid, where confirmed", desc: "A mix of online and in-person activity only when stated for a specific cohort." },
+                      { id: "undecided", title: "I’m open to options", desc: "I will decide after reviewing the confirmed schedule and delivery details." },
                     ].map((opt) => (
                       <button
                         key={opt.id}
@@ -264,7 +260,7 @@ export default function AIAdvisorPage() {
                       onClick={() => setStep(4)}
                       className="gold-btn flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2"
                     >
-                      <span>Continue to Weekly Commitment</span>
+                      <span>Continue to Weekly Time</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -276,7 +272,7 @@ export default function AIAdvisorPage() {
                 <div className="space-y-5 animate-in fade-in duration-150">
                   <div>
                     <h2 className="text-xl font-bold text-white">What is your weekly time availability?</h2>
-                    <p className="text-xs text-zinc-400 mt-1">We calibrate cohort intensity to match your schedule:</p>
+                    <p className="text-xs text-zinc-400 mt-1">Choose the amount of time you can realistically set aside:</p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -290,7 +286,7 @@ export default function AIAdvisorPage() {
                       }`}
                     >
                       <div className="font-bold text-sm text-amber-400">Full-Time Immersion</div>
-                      <div className="text-xs text-zinc-400 mt-1">35-40 hours / week. Fastest track to employment in 8-12 weeks.</div>
+                      <div className="text-xs text-zinc-400 mt-1">A substantial weekly commitment for practice and assignments; outcomes and timelines vary.</div>
                     </button>
 
                     <button
@@ -303,7 +299,7 @@ export default function AIAdvisorPage() {
                       }`}
                     >
                       <div className="font-bold text-sm text-amber-400">Evenings & Weekends</div>
-                      <div className="text-xs text-zinc-400 mt-1">15-20 hours / week. Ideal for university students or working professionals.</div>
+                      <div className="text-xs text-zinc-400 mt-1">A smaller weekly commitment that may suit people balancing other responsibilities.</div>
                     </button>
                   </div>
 
@@ -322,12 +318,12 @@ export default function AIAdvisorPage() {
                       {isAnalyzing ? (
                         <>
                           <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                          <span>AI Computing Vector & Graph Match...</span>
+                          <span>Reviewing your preferences...</span>
                         </>
                       ) : (
                         <>
                           <Sparkles className="w-4 h-4 text-black" />
-                          <span>Generate My Personalized Match</span>
+                          <span>Suggest a Starting Course</span>
                         </>
                       )}
                     </button>
@@ -344,8 +340,8 @@ export default function AIAdvisorPage() {
                         <Target className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-emerald-400">Match Compatibility</div>
-                        <div className="text-lg font-extrabold text-white">{matchResult.compatibilityScore}% Match Score</div>
+                        <div className="text-xs font-semibold text-emerald-400">Suggested starting point</div>
+                        <div className="text-lg font-extrabold text-white">Based on your selections</div>
                       </div>
                     </div>
 
@@ -362,10 +358,10 @@ export default function AIAdvisorPage() {
                   <div className="mercor-card p-6 rounded-2xl border border-amber-500/40 space-y-4 bg-gradient-to-br from-amber-500/10 via-black to-emerald-500/10">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-amber-500 text-black">
-                        Recommended Cohort
+                        Suggested learning path
                       </span>
                       <span className="text-xs text-zinc-300 font-semibold">
-                        {matchResult.course.durationWeeks} Weeks &bull; {matchResult.course.mode}
+                        {matchResult.course.durationWeeks} {matchResult.course.durationWeeks === 1 ? "week" : "weeks"} · {matchResult.course.mode}
                       </span>
                     </div>
 
@@ -374,31 +370,17 @@ export default function AIAdvisorPage() {
                     </h3>
                     <p className="text-xs text-zinc-300 leading-relaxed">
                       {matchResult.course.description}
+                    <br /><span className="text-zinc-400">{matchResult.recommendationReason}</span>
                     </p>
 
-                    {/* FalkorDB Graph Skills Path */}
                     <div className="space-y-2 pt-3 border-t border-white/10">
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
-                        <Network className="w-4 h-4" />
-                        <span>FalkorDB Skill Graph Roadmaps:</span>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        {matchResult.graphPrerequisites.map((node: any, nIdx: number) => (
-                          <div
-                            key={nIdx}
-                            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs"
-                          >
-                            <div className="font-bold text-white truncate">{node.name}</div>
-                            <div className="text-[10px] text-amber-400 mt-0.5">{node.status}</div>
-                          </div>
+                      <div className="text-xs font-semibold text-amber-400">Practice focus</div>
+                      <div className="flex flex-wrap gap-2">
+                        {matchResult.practiceFocus.map((skill: string) => (
+                          <span key={skill} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-zinc-300">{skill}</span>
                         ))}
                       </div>
-                    </div>
-
-                    {/* Hiring Outlook */}
-                    <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40 text-xs text-zinc-300">
-                      <TrendingUp className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>{matchResult.hiringOutlook}</span>
+                      <p className="text-xs leading-relaxed text-zinc-400">{matchResult.nextStep}</p>
                     </div>
 
                     {/* CTA */}
@@ -407,15 +389,15 @@ export default function AIAdvisorPage() {
                         href={`/courses/${matchResult.course.slug}`}
                         className="gold-btn flex-1 py-3 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2"
                       >
-                        <span>View Full Syllabus & Enroll</span>
+                        <span>Review Course Details</span>
                         <ArrowRight className="w-4 h-4" />
                       </Link>
 
                       <a
-                        href="/about"
+                        href={`/courses/${matchResult.course.slug}`}
                         className="px-5 py-3 rounded-xl border border-white/15 text-xs font-semibold text-zinc-200 hover:text-white text-center"
                       >
-                        Visit Campus First
+                        Review Delivery Details
                       </a>
                     </div>
                   </div>

@@ -74,6 +74,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     fetchLanguageData(locale);
   }, [locale, fetchLanguageData]);
 
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
   const setLocale = (newLocale: string) => {
     setLocaleState(newLocale);
     try {

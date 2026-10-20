@@ -16,13 +16,13 @@ export default function BlogIndexPage() {
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Newspaper className="w-3.5 h-3.5" />
-              Career & Tech Intelligence
+              Practical Work & Learning Insights
             </div>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
-              Insights for Modern <span className="gold-gradient-text">Engineers & Creators</span>
+              Insights on <span className="gold-gradient-text">Work, Skills & Value Chains</span>
             </h1>
             <p className="text-zinc-400 text-base leading-relaxed">
-              Curated articles on breaking into global tech roles, masteries in vector search and graph databases, and dispatches from our Cameroon campuses.
+              Practical articles on role expectations, work quality, collaboration, value chains, capability evidence, and how people can grow across different kinds of work.
             </p>
           </div>
 

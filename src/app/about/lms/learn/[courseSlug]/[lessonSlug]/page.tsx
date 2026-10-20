@@ -148,7 +148,7 @@ export default function LMSClassroomPage({
       if (lower.includes("cash flow") || lower.includes("margin") || lower.includes("money")) {
         aiReply = `In this module on **${currentLesson?.title || "Value Creation"}**, remember: Cash flow is reality, profit is an accounting estimate. Always calculate:\n\n**Net Cash Flow = Cash Inflows - Cash Outflows**.\n\nNever price services solely on hourly time; price based on the commercial impact created for the client!`;
       } else if (lower.includes("simulation") || lower.includes("test")) {
-        aiReply = `Here is a practical simulation challenge:\n\nIf your operating overhead is $400/month and each client pays $600/month on retainer, you break even with **1 client** and reach 66% net margins with **2 clients**. How would you structure your proposal to guarantee client ROI?`;
+        aiReply = `Here is a practical simulation challenge:\n\nIf your operating overhead is $400/month and each client pays $600/month on retainer, you break even with **1 client** and reach 66% net margins with **2 clients**. What assumptions would you validate with the client before proposing a service, and how would you measure whether it is useful?`;
       } else {
         aiReply = `Great observation on **${currentLesson?.title}**! In HCIL's proof-of-work framework, focus on documenting the measurable deliverable before seeking payment. Would you like me to generate an executive template for your student notes?`;
       }

@@ -12,22 +12,22 @@ export function BlogInsightsSection() {
       slug: "cash-flow-vs-capital-gains",
       category: "Money Intelligence",
       readTime: "6 min read",
-      title: "Cash Flow vs Capital Gains in Emerging Tech Markets",
-      excerpt: "Why high-earning digital builders remain financially fragile without cash-generating asset allocation and operational balance sheets.",
+      title: "How Everyday Roles Create Value Across a Business",
+      excerpt: "Trace how customer support, administration, delivery, finance, and product work connect to customer outcomes and organizational performance.",
     },
     {
       slug: "robert-kiyosaki-software-engineers",
       category: "Ownership & Assets",
       readTime: "8 min read",
-      title: "Why Kiyosaki's Cashflow Principles Apply to Software Engineers",
-      excerpt: "Moving from the 'E' (Employee) quadrant to the 'B' (Business Owner) quadrant by packaging software skills into repeatable systems.",
+      title: "From Individual Tasks to Reliable Team Processes",
+      excerpt: "Learn how documentation, clear handoffs, and repeatable procedures help teams reduce errors and deliver consistent results.",
     },
     {
       slug: "inside-hcil-douala-yaounde-labs",
       category: "On-Site Labs",
       readTime: "5 min read",
-      title: "Inside HCIL Douala & Yaounde Physical Innovation Labs",
-      excerpt: "How uninterrupted solar power, 1Gbps fiber, and in-person peer accountability create an unfair advantage for African builders.",
+      title: "What Counts as Evidence of Practical Capability?",
+      excerpt: "Explore work samples, task simulations, assessment criteria, and honest ways to show what you can do without relying on inflated promises.",
     },
   ];
 
@@ -56,7 +56,7 @@ export function BlogInsightsSection() {
             href="/blog"
             className="text-xs font-bold text-[#0d1210] hover:text-[#ffcd00] flex items-center gap-1.5 transition-colors self-start md:self-auto"
           >
-            <span>Browse all articles</span>
+            <span>Browse all insights</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -93,7 +93,7 @@ export function BlogInsightsSection() {
                   href={`/blog/${art.slug}`}
                   className="text-xs font-bold text-[#0d1210] flex items-center gap-1 hover:gap-2 transition-all"
                 >
-                  <span>Read insight</span>
+                  <span>Read article</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#059669]" />
                 </Link>
               </div>
