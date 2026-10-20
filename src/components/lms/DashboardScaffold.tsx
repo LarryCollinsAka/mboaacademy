@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
-import { Navbar } from "@/components/layout/Navbar";
+import { DashboardFooter } from "@/components/layout/DashboardFooter";
 
 type DashboardRole = "Student" | "Trainer" | "Administrator";
 
@@ -24,7 +24,6 @@ export function DashboardScaffold({ role }: { role: DashboardRole }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210]">
-      <Navbar />
       <main className="flex-1 py-12 sm:py-16">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="space-y-3">
@@ -62,6 +61,7 @@ export function DashboardScaffold({ role }: { role: DashboardRole }) {
           </div>
         </div>
       </main>
+      <DashboardFooter />
     </div>
   );
 }

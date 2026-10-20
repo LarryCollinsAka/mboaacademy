@@ -29,19 +29,19 @@ export function LanguageSelector() {
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-amber-500/40 text-xs font-medium text-zinc-200 transition-all"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#0d1210]/15 bg-white hover:bg-[#f4efe1] hover:border-amber-500/40 text-xs font-medium text-[#0d1210] transition-all"
         aria-label="Select Language"
       >
         <span className="text-sm">{currentLang.flag || "🌐"}</span>
-        <span className="font-semibold uppercase text-[11px] text-amber-400">
+        <span className="font-semibold uppercase text-[11px] text-[#059669]">
           {currentLang.code}
         </span>
-        <ChevronDown className="w-3 h-3 text-zinc-400" />
+        <ChevronDown className="w-3 h-3 text-[#5f6c65]" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-44 rounded-xl mercor-card border border-amber-500/30 shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95 duration-150">
-          <div className="px-3 py-1.5 border-b border-white/5 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+        <div className="absolute right-0 mt-2 w-44 rounded-xl border border-[#0d1210]/10 bg-white shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-150">
+          <div className="px-3 py-1.5 border-b border-[#0d1210]/10 text-[10px] font-semibold text-[#5f6c65] uppercase tracking-wider">
             Select Language
           </div>
           <div className="py-1">
@@ -54,8 +54,8 @@ export function LanguageSelector() {
                     setLocale(lang.code);
                     setIsOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-white/5 transition-colors ${
-                    isSelected ? "text-amber-400 font-bold bg-amber-500/10" : "text-zinc-300"
+                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-[#f4efe1] transition-colors ${
+                    isSelected ? "text-[#059669] font-bold bg-emerald-50" : "text-[#34403b]"
                   }`}
                 >
                   <span className="flex items-center gap-2">

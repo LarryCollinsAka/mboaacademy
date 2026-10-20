@@ -88,7 +88,7 @@ export async function getCachedCourses(locale: string) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090a0f] text-slate-100 selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210] selection:bg-[#ffcd00] selection:text-black">
       <Navbar />
 
       <main className="flex-1 py-14">

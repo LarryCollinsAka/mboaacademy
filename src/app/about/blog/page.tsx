@@ -6,7 +6,7 @@ import { Newspaper, Clock, ArrowRight, Tag, Star } from "lucide-react";
 
 export default function BlogIndexPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#090a0f] text-slate-100 selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210] selection:bg-[#ffcd00] selection:text-black">
       <Navbar />
 
       <main className="flex-1 py-16">
@@ -28,7 +28,7 @@ export default function BlogIndexPage() {
 
           {/* Featured Post (Hero) */}
           {BLOG_POSTS_DATA[0] && (
-            <div className="mercor-card rounded-3xl overflow-hidden border border-amber-500/30 grid grid-cols-1 lg:grid-cols-2 group hover:border-amber-500/50 transition-all">
+            <div className="rounded-3xl overflow-hidden border border-[#0d1210]/10 bg-white shadow-sm grid grid-cols-1 lg:grid-cols-2 group hover:border-amber-500/50 transition-all">
               <div className="relative h-64 lg:h-auto overflow-hidden">
                 <img
                   src={BLOG_POSTS_DATA[0].coverImage}

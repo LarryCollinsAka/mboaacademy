@@ -47,112 +47,159 @@ enum PaymentStatus {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String?        @unique
+  id            String    @id @default(cuid())
+  email         String?   @unique
   emailVerified DateTime?
   name          String?
   passwordHash  String?
-  role          Role           @default(STUDENT)
+  role          Role      @default(STUDENT)
   avatar        String?
   image         String?
   bio           String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  enrollments   Enrollment[]
-  notes         StudentNote[]
-  submissions   Submission[]
-  coursesTaught Course[]       @relation("InstructorCourses")
-  cohortsTaught Cohort[]        @relation("CohortTrainers")
-  accounts      Account[]
-  sessions      Session[]
-  payments      Payment[]
+  enrollments                  Enrollment[]
+  notes                        StudentNote[]
+  submissions                  Submission[]
+  coursesTaught                Course[]      @relation("InstructorCourses")
+  cohortsTaught                Cohort[]      @relation("CohortTrainers")
+  accounts                     Account[]
+  sessions                     Session[]
+  payments                     Payment[]
+  enrollmentExceptionsApproved Enrollment[]  @relation("EnrollmentExceptionApprover")
 }
 
 model Course {
-  id              String         @id @default(cuid())
-  title           String
-  slug            String         @unique
-  headline        String
-  description     String
-  category        String         @default("Value-Creating Skills")
-  level           String         @default("All Levels") // Beginner, Intermediate, Advanced
-  mode            LearningMode   @default(HYBRID)
-  price           Float          @default(0.0)
-  currency        String         @default("USD")
-  durationHours   Int            @default(40)
-  durationDays    Int?           // Nominal calendar duration; cohort dates remain authoritative for each run
-  thumbnail       String?
-  skills          String[]       // Graph node references (e.g. "React", "Next.js", "Docker")
-  published       Boolean        @default(false)
-  
-  instructorId    String?
-  instructor      User?          @relation("InstructorCourses", fields: [instructorId], references: [id])
-  
-  modules         Module[]
-  enrollments     Enrollment[]
-  cohorts         Cohort[]
-  assignments     Assignment[]
-  payments        Payment[]
+  id            String       @id @default(cuid())
+  title         String
+  slug          String       @unique
+  headline      String
+  description   String
+  category      String       @default("Value-Creating Skills")
+  level         String       @default("All Levels") // Beginner, Intermediate, Advanced
+  mode          LearningMode @default(HYBRID)
+  price         Float        @default(0.0)
+  currency      String       @default("XAF")
+  durationHours Int          @default(40)
+  durationDays  Int? // Nominal calendar duration; cohort dates remain authoritative for each run
+  thumbnail     String?
+  skills        String[] // Graph node references (e.g. "React", "Next.js", "Docker")
+  published     Boolean      @default(false)
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  instructorId String?
+  instructor   User?   @relation("InstructorCourses", fields: [instructorId], references: [id])
+
+  modules     Module[]
+  enrollments Enrollment[]
+  cohorts     Cohort[]
+  assignments Assignment[]
+  payments    Payment[]
+  coursePrices CoursePrice[]
+  translations CourseTranslation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model CoursePrice {
+  id         String   @id @default(cuid())
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // ISO 3166-1 alpha-2 country code, or "GLOBAL"
+  marketCode String   @default("GLOBAL")
+  // ISO 4217 currency code: XAF, XOF, EUR, USD, NGN, etc.
+  currency   String   @db.VarChar(3)
+  amount     Decimal  @db.Decimal(12, 2)
+
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  payments   Payment[]
+
+  @@unique([courseId, marketCode, currency])
+  @@index([marketCode, currency, isActive])
+  @@index([courseId, isActive])
+}
+
+
+model CourseTranslation {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  locale      String
+  language    Language @relation(fields: [locale], references: [code], onDelete: Cascade)
+
+  title       String
+  headline    String
+  description String   @db.Text
+  category    String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([courseId, locale])
+  @@index([locale])
 }
 
 model Cohort {
-  id                    String       @id @default(cuid())
-  courseId              String
-  course                Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  name                  String
-  code                  String       @unique
-  startsAt              DateTime
-  endsAt                DateTime
-  timezone              String       @default("Africa/Douala")
-  mode                  LearningMode
-  status                CohortStatus @default(PLANNED)
-  enrollmentOpensAt     DateTime?
-  enrollmentClosesAt    DateTime?
-  weeklyLearningHours   Float?
-  scheduleNotes         String?      @db.Text
-  capacity              Int?
-  trainers              User[]       @relation("CohortTrainers")
-  enrollments           Enrollment[]
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
+  id                  String       @id @default(cuid())
+  courseId            String
+  course              Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  name                String
+  code                String       @unique
+  startsAt            DateTime
+  endsAt              DateTime
+  timezone            String       @default("Africa/Douala")
+  mode                LearningMode
+  status              CohortStatus @default(PLANNED)
+  enrollmentOpensAt   DateTime?
+  enrollmentClosesAt  DateTime?
+  weeklyLearningHours Float?
+  scheduleNotes       String?      @db.Text
+  capacity            Int?
+  trainers            User[]       @relation("CohortTrainers")
+  enrollments         Enrollment[]
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
 
   @@index([courseId, startsAt, endsAt])
   @@index([status, startsAt])
 }
 
 model Module {
-  id          String    @id @default(cuid())
-  courseId    String
-  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  title       String
-  order       Int       @default(1)
-  lessons     Lesson[]
+  id       String   @id @default(cuid())
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title    String
+  order    Int      @default(1)
+  lessons  Lesson[]
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Lesson {
-  id              String         @id @default(cuid())
+  id              String  @id @default(cuid())
   moduleId        String
-  module          Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  module          Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   title           String
   slug            String
-  content         String?        @db.Text
+  content         String? @db.Text
   videoUrl        String?
-  durationMinutes Int            @default(15)
-  order           Int            @default(1)
-  isFreePreview   Boolean        @default(false)
+  durationMinutes Int     @default(15)
+  order           Int     @default(1)
+  isFreePreview   Boolean @default(false)
 
-  notes           StudentNote[]
-  assignments     Assignment[]
+  notes       StudentNote[]
+  assignments Assignment[]
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudentNote {
@@ -169,19 +216,19 @@ model StudentNote {
 }
 
 model Assignment {
-  id           String        @id @default(cuid())
+  id           String       @id @default(cuid())
   courseId     String
-  course       Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessonId     String?
-  lesson       Lesson?       @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  lesson       Lesson?      @relation(fields: [lessonId], references: [id], onDelete: SetNull)
   title        String
-  instructions String        @db.Text
-  maxPoints    Int           @default(100)
+  instructions String       @db.Text
+  maxPoints    Int          @default(100)
   dueDate      DateTime?
   submissions  Submission[]
 
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Submission {
@@ -196,43 +243,54 @@ model Submission {
   feedback     String?          @db.Text
   status       SubmissionStatus @default(SUBMITTED)
 
-  submittedAt  DateTime         @default(now())
-  gradedAt     DateTime?
+  submittedAt DateTime  @default(now())
+  gradedAt    DateTime?
 }
 
 model Enrollment {
-  id          String           @id @default(cuid())
-  userId      String
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId    String
-  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  cohortId    String?
-  cohort      Cohort?          @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  id       String  @id @default(cuid())
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  cohortId String?
+  cohort   Cohort? @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+
   mode        LearningMode     @default(HYBRID)
   status      EnrollmentStatus @default(ACTIVE)
-  progress    Int              @default(0) // Percentage 0 - 100
-
+  progress    Int              @default(0)
   enrolledAt  DateTime         @default(now())
   completedAt DateTime?
 
-  @@unique([userId, courseId, cohortId])
+  // Superadmin-approved exception metadata
+  isException           Boolean   @default(false)
+  exceptionReason       String?
+  exceptionApprovedAt   DateTime?
+  exceptionApprovedById String?
+  exceptionApprovedBy   User?     @relation("EnrollmentExceptionApprover", fields: [exceptionApprovedById], references: [id], onDelete: Restrict)
+
   @@index([cohortId, status])
+  @@index([userId, courseId, cohortId])
+  @@index([exceptionApprovedById])
 }
 
 model Payment {
-  id             String        @id @default(cuid())
-  userId         String
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId       String
-  course         Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  amount         Float
-  currency       String        @default("USD")
-  provider       String        // "STRIPE", "MOMO", "ORANGE_MONEY"
-  providerRef    String?
-  status         PaymentStatus @default(PENDING)
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  amount      Float
+  currency    String        
+  provider    String // "STRIPE", "MOMO", "ORANGE_MONEY"
+  providerRef String?
+  coursePriceId String?
+  coursePrice   CoursePrice? @relation(fields: [coursePriceId], references: [id], onDelete: SetNull)
+  status      PaymentStatus @default(PENDING)
+  
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Testimonial {
@@ -264,24 +322,25 @@ model BlogPost {
 }
 
 model Language {
-  code        String        @id // e.g. "en", "fr", "es", "de"
-  name        String        // e.g. "English", "Français"
-  nativeName  String?       // e.g. "Français", "Deutsch"
-  flag        String?       // e.g. "🇬🇧", "🇫🇷", "🇨🇲"
-  isDefault   Boolean       @default(false)
-  isActive    Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  code       String   @id // e.g. "en", "fr", "es", "de"
+  name       String // e.g. "English", "Français"
+  nativeName String? // e.g. "Français", "Deutsch"
+  flag       String? // e.g. "🇬🇧", "🇫🇷", "🇨🇲"
+  courseTranslations CourseTranslation[]
+  isDefault  Boolean  @default(false)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   translations Translation[]
 }
 
 model Translation {
   id        String   @id @default(cuid())
-  locale    String   // references Language.code
+  locale    String // references Language.code
   language  Language @relation(fields: [locale], references: [code], onDelete: Cascade)
   namespace String   @default("common") // e.g. "common", "nav", "hero", "courses", "lms"
-  key       String   // e.g. "hero_title", "apply_now"
+  key       String // e.g. "hero_title", "apply_now"
   value     String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -290,25 +349,23 @@ model Translation {
   @@index([locale, namespace])
 }
 
-
-
 // Auth.js / NextAuth adapter models. Authentication providers and session handling
 // must still be configured in application code before protected routes are enabled.
 model Account {
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
   oauth_token_secret String?
-  oauth_token       String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  oauth_token        String?
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
   @@index([userId])
