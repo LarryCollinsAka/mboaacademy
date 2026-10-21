@@ -13,7 +13,7 @@ export function FiveStepProgression() {
       stage: "Core Concepts",
       desc: t(
         "step.1.desc",
-        "Learn the deep mechanics of how money, operating costs, and client expectations work in modern service businesses."
+        "Understand the problem, who it affects, the expected outcome, and the standards that define good work."
       ),
     },
     {
@@ -22,7 +22,7 @@ export function FiveStepProgression() {
       stage: "Simulated Scenarios",
       desc: t(
         "step.2.desc",
-        "Interactive customer support ticketing simulations, executive calendar conflict resolutions, and unit economics calculations."
+        "Practise realistic tasks, use relevant tools, and work through scenarios before taking on greater responsibility."
       ),
     },
     {
@@ -31,7 +31,7 @@ export function FiveStepProgression() {
       stage: "Real Deliverables",
       desc: t(
         "step.3.desc",
-        "Create tangible operational assets: complete support playbooks, executive scheduling protocols, and client onboarding kits."
+        "Produce useful deliverables such as support responses, process documents, schedules, reports, or working prototypes."
       ),
     },
     {
@@ -40,16 +40,16 @@ export function FiveStepProgression() {
       stage: "Objective Assessment",
       desc: t(
         "step.4.desc",
-        "Demonstrate capability against clear rubrics reviewed by mentors—building an evidence record alongside credentials."
+        "Explain your decisions, compare your work with clear criteria, and keep evidence of strengths and gaps—not just course completion."
       ),
     },
     {
       num: "05",
       name: t("step.5.name", "Apply & Grow"),
-      stage: "Economic Agency",
+      stage: "Apply & Adapt",
       desc: t(
         "step.5.desc",
-        "Test offers with real clients, manage cash flow and expenses deliberately, and lay the foundation for sustainable independence."
+        "Apply what you learned, reflect on outcomes, use feedback, and adjust your methods as tasks and contexts change."
       ),
     },
   ];
@@ -69,7 +69,7 @@ export function FiveStepProgression() {
           <p className="text-sm text-[#4d5953] leading-relaxed">
             {t(
               "progression.desc",
-              "A structured learning progression that moves from foundational theory to demonstrated commercial execution."
+              "A practical cycle: understand context, practise, produce work, examine evidence, and adapt. The method can change; accountability for useful outcomes remains."
             )}
           </p>
         </div>

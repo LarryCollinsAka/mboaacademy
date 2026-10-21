@@ -13,7 +13,7 @@ export function BuiltDifferentlySection() {
       title: t("diff.1.title", "Practical evidence alongside recognized credentials"),
       desc: t(
         "diff.1.desc",
-        "Credentials have value, but employers and clients hire for execution. Learners graduate with assessed project rubrics, verified work samples, and transparent capability records."
+        "Credentials can matter, but they do not tell the whole story. The goal is to build a clear record of practical work, feedback, and demonstrated strengths—without treating one assessment as a complete picture of a person."
       ),
       example: "Sample: Verified Customer Support Knowledge Base & 7-Day Crisis Scheduling Playbook.",
     },
@@ -23,7 +23,7 @@ export function BuiltDifferentlySection() {
       title: t("diff.2.title", "Active simulations over passive lecture listening"),
       desc: t(
         "diff.2.desc",
-        "Learn money mechanics and client communication by actively resolving realistic scenarios: handling dissatisfied customers, balancing project budgets, and managing calendars across time zones."
+        "Practise realistic tasks, receive feedback, and revise the work. A strong learner knows when to follow a method, when to adapt it, and how to explain the decision."
       ),
       example: "Sample: Real-time SLA de-escalation drills & XAF cash flow balance sheet modeling.",
     },
@@ -40,12 +40,12 @@ export function BuiltDifferentlySection() {
     {
       num: "04",
       badge: "Long-term Goal",
-      title: t("diff.4.title", "Ownership and agency as the ultimate objective"),
+      title: t("diff.4.title", "Multiple paths, meaningful contribution"),
       desc: t(
         "diff.4.desc",
-        "Employment is a valid path. Freelancing is a valid path. Entrepreneurship is a valid path. Our mission is to give you the financial intelligence to choose and build sustainable economic agency."
+        "People contribute through employment, freelancing, business, further study, community work, and many other paths. We focus on useful capability and responsible contribution—not prescribing one definition of success."
       ),
-      example: "Focus: Understanding the transition from hourly compensation to repeatable assets.",
+      example: "Focus: Build transferable capability, learn from outcomes, and choose a path that fits your goals and context.",
     },
   ];
 
@@ -69,7 +69,7 @@ export function BuiltDifferentlySection() {
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
             {t(
               "diff.desc",
-              "We bridge the gap between academic theory, practical capability, and financial intelligence. Honest standards, objective rubrics, and demonstrable skills."
+              "We connect learning with practical contribution. Clear expectations, useful practice, honest feedback, and evidence help people grow without pretending a single score defines their potential."
             )}
           </p>
         </div>

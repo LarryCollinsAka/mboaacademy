@@ -8,38 +8,38 @@ export function YellowPillarsBand() {
   const pillars = [
     {
       num: "01",
-      title: t("pillar.1.title", "Financial Intelligence"),
-      outcome: t("pillar.1.outcome", "See how work connects"),
+      title: t("pillar.1.title", "Practical Capability"),
+      outcome: t("pillar.1.outcome", "Understand the work"),
       desc: t(
         "pillar.1.desc",
-        "Master cash flow, net profit, operating overhead, and debt. Learn why money earned is not necessarily money retained, and distinguish productive assets from liabilities."
+        "Build usable knowledge and repeatable skills by understanding the context, standards, tools, and outcomes of real tasks."
       ),
     },
     {
       num: "02",
-      title: t("pillar.2.title", "Value-Creating Skills"),
-      outcome: t("pillar.2.outcome", "Practise role tasks"),
+      title: t("pillar.2.title", "Value-Chain Contribution"),
+      outcome: t("pillar.2.outcome", "Solve meaningful problems"),
       desc: t(
         "pillar.2.desc",
-        "Develop verified capabilities in Customer Support, Executive & Virtual Assistance (VA), and operational workflows that businesses urgently pay to resolve."
+        "Learn how individual tasks connect to customers, teams, operations, and outcomes—and where your contribution creates measurable value."
       ),
     },
     {
       num: "03",
-      title: t("pillar.3.title", "Entrepreneurship & Business Basics"),
-      outcome: t("pillar.3.outcome", "Show evidence"),
+      title: t("pillar.3.title", "Evidence & Reliability"),
+      outcome: t("pillar.3.outcome", "Demonstrate capability"),
       desc: t(
         "pillar.3.desc",
-        "Identify real customer problems, price services by commercial value rather than hourly labor, and design service packages with clear unit margins."
+        "Create work samples, explain your decisions, meet agreed standards, and build a trustworthy record of what you can do and what you are still learning."
       ),
     },
     {
       num: "04",
-      title: t("pillar.4.title", "Ownership & Asset Building"),
-      outcome: t("pillar.4.outcome", "Grow responsibility"),
+      title: t("pillar.4.title", "Adaptation & Growth"),
+      outcome: t("pillar.4.outcome", "Improve with feedback"),
       desc: t(
         "pillar.4.desc",
-        "Document standard operating procedures (SOPs), delegate tasks, and explore how a solo service can grow into a resilient, scalable operation that you own."
+        "Use feedback and changing evidence to improve your approach. Build toward employment, further study, freelance work, entrepreneurship, or other meaningful paths."
       ),
     },
   ];

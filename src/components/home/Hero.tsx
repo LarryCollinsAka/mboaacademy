@@ -31,19 +31,19 @@ export function Hero() {
         {/* Refined Headline matching user direction */}
         <div className="space-y-4 max-w-4xl mx-auto">
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-[#0d1210] leading-[1.08]">
-            {t("hero.headline_1", "Learn to create value.")}{" "}
+            {t("hero.headline_1", "Build capabilities that create value.")}{" "}
             <span className="block sm:inline text-[#0d1210] underline decoration-[#ffcd00] decoration-wavy decoration-2">
-              {t("hero.headline_2", "Understand money.")}
+              {t("hero.headline_2", "Contribute to real work.")}
             </span>{" "}
             <span className="block sm:inline">
-              {t("hero.headline_3", "Build what you own.")}
+              {t("hero.headline_3", "Keep learning and adapting.")}
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-[#3b4742] max-w-3xl mx-auto leading-relaxed">
             {t(
               "hero.subheadline",
-              "HCIL Academy helps you develop practical skills, understand cash flow, prove what you can do, and turn useful ideas into real-world opportunities—from your first project to a viable enterprise."
+              "HCIL Academy helps you understand real problems, practise useful tasks, build deliverables, learn from feedback, and show evidence of what you can contribute across work, business, and community value chains."
             )}
           </p>
         </div>
