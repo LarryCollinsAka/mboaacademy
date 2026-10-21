@@ -1,0 +1,2 @@
+ALTER TABLE "CourseTranslation"
+ADD COLUMN "skills" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
