@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { Globe, ChevronDown, Check } from "lucide-react";
 
 export function LanguageSelector() {
-  const { locale, setLocale, languages } = useI18n();
+  const { locale, setLocale, languages, t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +30,7 @@ export function LanguageSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#0d1210]/15 bg-white hover:bg-[#f4efe1] hover:border-amber-500/40 text-xs font-medium text-[#0d1210] transition-all"
-        aria-label="Select Language"
+        aria-label={t("nav.selectLanguage", "Select language")}
       >
         <span className="text-sm">{currentLang.flag || "🌐"}</span>
         <span className="font-semibold uppercase text-[11px] text-[#059669]">

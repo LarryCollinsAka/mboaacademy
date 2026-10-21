@@ -1,10 +1,14 @@
+"use client";
+
 import { Navbar } from "@/components/layout/Navbar";
+import { useI18n } from "@/lib/i18n";
 import { Footer } from "@/components/layout/Footer";
 import { BLOG_POSTS_DATA } from "@/data/blog";
 import Link from "next/link";
 import { Newspaper, Clock, ArrowRight, Tag, Star } from "lucide-react";
 
 export default function BlogIndexPage() {
+  const { t } = useI18n();
   return (
     <div className="min-h-screen flex flex-col bg-[#fbf9f1] text-[#0d1210] selection:bg-[#ffcd00] selection:text-black">
       <Navbar />
@@ -14,15 +18,15 @@ export default function BlogIndexPage() {
           
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#fff7cc] text-[#765400] border border-[#e6b800]/40">
               <Newspaper className="w-3.5 h-3.5" />
-              Practical Work & Learning Insights
+              {t("blog.eyebrow", "Practical Work & Learning Insights")}
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
-              Insights on <span className="gold-gradient-text">Work, Skills & Value Chains</span>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-[#0d1210] tracking-tight">
+              {t("blog.title", "Insights on Work, Skills & Value Chains")}
             </h1>
-            <p className="text-zinc-400 text-base leading-relaxed">
-              Practical articles on role expectations, work quality, collaboration, value chains, capability evidence, and how people can grow across different kinds of work.
+            <p className="text-[#4d5953] text-base leading-relaxed">
+              {t("blog.intro", "Practical articles on role expectations, work quality, collaboration, value chains, capability evidence, and how people can grow across different kinds of work.")}
             </p>
           </div>
 
@@ -37,15 +41,15 @@ export default function BlogIndexPage() {
                 />
                 <div className="absolute top-4 left-4">
                   <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500 text-black">
-                    Featured Article
+                    {t("blog.featured", "Featured Article")}
                   </span>
                 </div>
               </div>
 
               <div className="p-8 sm:p-12 flex flex-col justify-between space-y-6">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 text-xs text-zinc-400">
-                    <span className="text-amber-400 font-semibold">{BLOG_POSTS_DATA[0].category}</span>
+                  <div className="flex items-center gap-3 text-xs text-[#68736d]">
+                    <span className="text-[#8a6500] font-semibold">{BLOG_POSTS_DATA[0].category}</span>
                     <span>&bull;</span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
@@ -56,17 +60,17 @@ export default function BlogIndexPage() {
                   </div>
 
                   <Link href={`/blog/${BLOG_POSTS_DATA[0].slug}`}>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white group-hover:text-amber-400 transition-colors leading-tight">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#0d1210] group-hover:text-[#047857] transition-colors leading-tight">
                       {BLOG_POSTS_DATA[0].title}
                     </h2>
                   </Link>
 
-                  <p className="text-sm text-zinc-400 leading-relaxed">
+                  <p className="text-sm text-[#4d5953] leading-relaxed">
                     {BLOG_POSTS_DATA[0].excerpt}
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                <div className="flex items-center justify-between pt-6 border-t border-[#0d1210]/10">
                   <div className="flex items-center gap-3">
                     <img
                       src={BLOG_POSTS_DATA[0].author.avatar}
@@ -74,8 +78,8 @@ export default function BlogIndexPage() {
                       className="w-10 h-10 rounded-full object-cover border border-amber-500/30"
                     />
                     <div>
-                      <h4 className="text-xs font-bold text-white">{BLOG_POSTS_DATA[0].author.name}</h4>
-                      <p className="text-[10px] text-zinc-400">{BLOG_POSTS_DATA[0].author.role}</p>
+                      <h4 className="text-xs font-bold text-[#0d1210]">{BLOG_POSTS_DATA[0].author.name}</h4>
+                      <p className="text-[10px] text-[#68736d]">{BLOG_POSTS_DATA[0].author.role}</p>
                     </div>
                   </div>
 
@@ -83,7 +87,7 @@ export default function BlogIndexPage() {
                     href={`/blog/${BLOG_POSTS_DATA[0].slug}`}
                     className="gold-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5"
                   >
-                    <span>Read Article</span>
+                    <span>{t("blog.readArticle", "Read article")}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -106,7 +110,7 @@ export default function BlogIndexPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-3 left-3">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-amber-400 border border-amber-500/30">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#fff7cc] text-[#765400] border border-[#e6b800]/40">
                         {post.category}
                       </span>
                     </div>
@@ -123,32 +127,32 @@ export default function BlogIndexPage() {
                     </div>
 
                     <Link href={`/blog/${post.slug}`}>
-                      <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors line-clamp-2">
+                      <h3 className="text-lg font-bold text-[#0d1210] group-hover:text-[#047857] transition-colors line-clamp-2">
                         {post.title}
                       </h3>
                     </Link>
 
-                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">
+                    <p className="text-xs text-[#68736d] line-clamp-3 leading-relaxed">
                       {post.excerpt}
                     </p>
                   </div>
                 </div>
 
-                <div className="p-6 pt-0 border-t border-white/5 flex items-center justify-between mt-4">
+                <div className="p-6 pt-0 border-t border-[#0d1210]/10 flex items-center justify-between mt-4">
                   <div className="flex items-center gap-2">
                     <img
                       src={post.author.avatar}
                       alt={post.author.name}
                       className="w-7 h-7 rounded-full object-cover border border-amber-500/20"
                     />
-                    <span className="text-[11px] text-zinc-300 font-medium">{post.author.name}</span>
+                    <span className="text-[11px] text-[#4d5953] font-medium">{post.author.name}</span>
                   </div>
 
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1"
+                    className="text-xs font-semibold text-[#047857] hover:text-[#035f46] flex items-center gap-1"
                   >
-                    <span>Read</span>
+                    <span>{t("blog.read", "Read")}</span>
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
