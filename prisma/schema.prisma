@@ -42,8 +42,13 @@ enum SubmissionStatus {
 
 enum PaymentStatus {
   PENDING
+  UNDER_REVIEW
   SUCCESS
+  REJECTED
   FAILED
+  EXPIRED
+  REFUND_PENDING
+  REFUNDED
 }
 
 model User {
@@ -67,6 +72,8 @@ model User {
   accounts                     Account[]
   sessions                     Session[]
   payments                     Payment[]
+  paymentReviews               PaymentReview[] @relation("PaymentReviewReviewer")
+  reviewedPayments             Payment[] @relation("PaymentReviewer")
   enrollmentExceptionsApproved Enrollment[]  @relation("EnrollmentExceptionApprover")
 }
 
@@ -288,10 +295,35 @@ model Payment {
   coursePriceId String?
   coursePrice   CoursePrice? @relation(fields: [coursePriceId], references: [id], onDelete: SetNull)
   status      PaymentStatus @default(PENDING)
-  
+  paymentReference String? @unique
+  senderPhone String?
+  evidencePath String?
+  submittedAt DateTime?
+  reviewedAt DateTime?
+  reviewedById String?
+  reviewedBy User? @relation("PaymentReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewNotes String? @db.Text
+  reviews PaymentReview[]
+
+  @@index([status, createdAt])
+  @@index([reviewedById])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PaymentReview {
+  id          String   @id @default(cuid())
+  paymentId   String
+  payment     Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  reviewerId  String
+  reviewer    User     @relation("PaymentReviewReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+  decision    String   // CONFIRMED or REJECTED
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([paymentId, createdAt])
+  @@index([reviewerId, createdAt])
 }
 
 model Testimonial {
